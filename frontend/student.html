@@ -1,1 +1,207 @@
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>بيانات الطالب - معهد جيل الأمة</title>
+  <style>
+    body {
+      font-family: "Tajawal", sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #2c786c;
+    }
+    .form-section {
+      background: white;
+      padding: 15px;
+      margin: 15px auto;
+      border-radius: 8px;
+      max-width: 400px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    button {
+      background: #2c786c;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:hover { background: #004445; }
+    .student-info, .tests, .pages {
+      background: white;
+      padding: 15px;
+      margin: 15px auto;
+      border-radius: 8px;
+      max-width: 600px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #004445;
+      margin-top: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background: #2c786c;
+      color: white;
+    }
+    .message {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+    }
+    .error {
+      background-color: #ffebee;
+      color: #c62828;
+      border-left: 4px solid #c62828;
+    }
+  </style>
+</head>
+<body>
+  <h1>📘 بيانات الطالب</h1>
+
+  <!-- إدخال الكود -->
+  <div class="form-section">
+    <label for="studentCode">أدخل كود الدخول:</label>
+    <input type="text" id="studentCode" maxlength="6" placeholder="6 أرقام">
+    <button onclick="fetchStudent()">عرض البيانات</button>
+    <div id="message" class="message"></div>
+  </div>
+
+  <!-- معلومات الطالب -->
+  <div class="student-info" id="studentInfo" style="display:none;">
+    <h2>معلومات أساسية</h2>
+    <p><strong>الاسم:</strong> <span id="studentName"></span></p>
+    <p><strong>الكود:</strong> <span id="studentCodeDisplay"></span></p>
+    <p><strong>المستوى:</strong> <span id="studentLevel"></span></p>
+  </div>
+
+  <!-- الاختبارات -->
+  <div class="tests" id="testsSection" style="display:none;">
+    <h2>📖 الاختبارات</h2>
+    <h3>اختبارات الدروس</h3>
+    <table id="lessonTestsTable">
+      <tr><th>الدرس</th><th>النتيجة</th><th>التاريخ</th></tr>
+    </table>
+
+    <h3>اختبارات التجويد</h3>
+    <table id="tajweedTestsTable">
+      <tr><th>الدرس</th><th>النتيجة</th><th>التاريخ</th></tr>
+    </table>
+
+    <h3>اختبارات الحفظ</h3>
+    <table id="memorizationTestsTable">
+      <tr><th>السورة</th><th>النتيجة</th><th>التاريخ</th></tr>
+    </table>
+  </div>
+
+  <!-- الصفحات الشهرية -->
+  <div class="pages" id="pagesSection" style="display:none;">
+    <h2>📅 الصفحات الشهرية</h2>
+    <table id="pagesTable">
+      <tr><th>الشهر</th><th>السنة</th><th>عدد الصفحات</th><th>الهدف</th><th>آخر تحديث</th></tr>
+    </table>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:5000/api/students/login";
+
+    function showMessage(text, type) {
+      const msg = document.getElementById("message");
+      msg.textContent = text;
+      msg.className = "message " + type;
+      msg.style.display = "block";
+      setTimeout(() => msg.style.display = "none", 4000);
+    }
+
+    async function fetchStudent() {
+      const code = document.getElementById("studentCode").value.trim();
+
+      if (!code || code.length !== 6 || !/^\d+$/.test(code)) {
+        showMessage("⚠️ الرجاء إدخال كود صحيح من 6 أرقام", "error");
+        return;
+      }
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code })
+        });
+
+        if (!response.ok) {
+          showMessage("❌ الكود غير صحيح", "error");
+          return;
+        }
+
+        const student = await response.json();
+        displayStudent(student);
+      } catch (err) {
+        showMessage("⚠️ حدث خطأ أثناء جلب البيانات", "error");
+      }
+    }
+
+    function displayStudent(student) {
+      // عرض المعلومات
+      document.getElementById("studentName").textContent = student.name;
+      document.getElementById("studentCodeDisplay").textContent = student.code;
+      document.getElementById("studentLevel").textContent = student.overallLevel;
+      document.getElementById("studentInfo").style.display = "block";
+
+      // عرض الاختبارات
+      fillTable("lessonTestsTable", student.lessonTests);
+      fillTable("tajweedTestsTable", student.tajweedTests);
+      fillTable("memorizationTestsTable", student.memorizationTests);
+      document.getElementById("testsSection").style.display = "block";
+
+      // عرض الصفحات الشهرية
+      const pagesTable = document.getElementById("pagesTable");
+      pagesTable.innerHTML = "<tr><th>الشهر</th><th>السنة</th><th>عدد الصفحات</th><th>الهدف</th><th>آخر تحديث</th></tr>";
+      student.monthlyPages.forEach(p => {
+        const row = `<tr>
+          <td>${p.month}</td>
+          <td>${p.year}</td>
+          <td>${p.pages}</td>
+          <td>${p.goal}</td>
+          <td>${p.lastUpdate || ""}</td>
+        </tr>`;
+        pagesTable.innerHTML += row;
+      });
+      document.getElementById("pagesSection").style.display = "block";
+    }
+
+    function fillTable(tableId, tests) {
+      const table = document.getElementById(tableId);
+      table.innerHTML = "<tr><th>الدرس</th><th>النتيجة</th><th>التاريخ</th></tr>";
+      tests.forEach(t => {
+        const row = `<tr><td>${t.testName}</td><td>${t.result}</td><td>${t.date}</td></tr>`;
+        table.innerHTML += row;
+      });
+    }
+  </script>
+</body>
+  </html>
