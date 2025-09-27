@@ -95,6 +95,7 @@
       box-shadow: var(--shadow-light);
       border-radius: 8px;
       overflow: hidden;
+      position: relative;
     }
     
     table, th, td {
@@ -107,12 +108,14 @@
       padding: 14px 10px;
       font-weight: 600;
       font-size: 16px;
+      position: relative;
     }
     
     td {
       padding: 12px 10px;
       text-align: center;
       transition: var(--transition);
+      position: relative;
     }
     
     tr:nth-child(even) {
@@ -256,33 +259,6 @@
       margin: 0;
     }
     
-    .progress-container {
-      margin: 20px 0;
-      width: 100%;
-    }
-    
-    .progress-bar {
-      height: 10px;
-      background-color: #e0e0e0;
-      border-radius: 5px;
-      overflow: hidden;
-      margin-top: 5px;
-    }
-    
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(to right, var(--primary-color), var(--primary-light));
-      border-radius: 5px;
-      transition: width 0.5s ease;
-    }
-    
-    .progress-info {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      color: var(--text-light);
-    }
-    
     .section-header {
       display: flex;
       align-items: center;
@@ -312,6 +288,59 @@
       font-size: 48px;
       margin-bottom: 15px;
       color: #e0e0e0;
+    }
+    
+    /* علامة الأحدث */
+    .latest-badge {
+      position: absolute;
+      top: -8px;
+      left: -8px;
+      background: var(--secondary-color);
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      z-index: 10;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .latest-row {
+      position: relative;
+      border-left: 3px solid var(--secondary-color);
+    }
+    
+    .latest-row td:first-child {
+      position: relative;
+    }
+    
+    .result-cell {
+      font-weight: 600;
+      position: relative;
+    }
+    
+    .result-cell.high {
+      color: var(--success-color);
+    }
+    
+    .result-cell.medium {
+      color: var(--secondary-color);
+    }
+    
+    .result-cell.low {
+      color: var(--danger-color);
+    }
+    
+    .sort-indicator {
+      margin-right: 5px;
+      font-size: 12px;
     }
     
     @media (max-width: 768px) {
@@ -344,6 +373,12 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
+      }
+      
+      .latest-badge {
+        font-size: 10px;
+        padding: 3px 8px;
+        left: -5px;
       }
     }
   </style>
@@ -442,7 +477,7 @@
       document.getElementById("studentLevel").textContent = student.overallLevel || "غير محدد";
       document.getElementById("studentImage").src = student.image || "default-avatar.png";
 
-      // تعبئة الجداول
+      // تعبئة الجداول مع الترتيب حسب التاريخ
       fillTable("lessonTestsTable", student.lessonTests, "lessonName");
       fillTable("tajweedTestsTable", student.tajweedTests, "testName");
       fillTable("memorizationTestsTable", student.memorizationTests, "testName");
@@ -450,9 +485,11 @@
       // الصفحات الشهرية
       const pagesTable = document.getElementById("pagesTable");
       if (student.monthlyPages && student.monthlyPages.length > 0) {
-        student.monthlyPages.forEach(p => {
-          const row = `<tr>
-            <td>${p.month}</td>
+        // ترتيب الصفحات الشهرية حسب السنة والشهر
+        const sortedPages = sortByDate(student.monthlyPages, "year", "month");
+        sortedPages.forEach((p, index) => {
+          const row = `<tr${index === 0 ? ' class="latest-row"' : ''}>
+            <td>${p.month}${index === 0 ? '<span class="latest-badge">الأحدث</span>' : ''}</td>
             <td>${p.year}</td>
             <td>${p.pages}</td>
             <td>${p.goal}</td>
@@ -473,10 +510,26 @@
     function fillTable(tableId, tests, nameField) {
       const table = document.getElementById(tableId);
       if (tests && tests.length > 0) {
-        tests.forEach(t => {
-          const row = `<tr>
-            <td>${t[nameField]}</td>
-            <td>${t.result}</td>
+        // ترتيب الاختبارات حسب التاريخ (الأحدث أولاً)
+        const sortedTests = sortTestsByDate(tests);
+        
+        sortedTests.forEach((t, index) => {
+          // تحديد لون النتيجة بناءً على القيمة
+          let resultClass = "";
+          if (t.result && typeof t.result === 'string') {
+            const resultValue = parseInt(t.result.replace('%', ''));
+            if (resultValue >= 80) {
+              resultClass = "high";
+            } else if (resultValue >= 60) {
+              resultClass = "medium";
+            } else {
+              resultClass = "low";
+            }
+          }
+          
+          const row = `<tr${index === 0 ? ' class="latest-row"' : ''}>
+            <td>${t[nameField]}${index === 0 ? '<span class="latest-badge">الأحدث</span>' : ''}</td>
+            <td class="result-cell ${resultClass}">${t.result}</td>
             <td>${t.date}</td>
           </tr>`;
           table.innerHTML += row;
@@ -486,6 +539,66 @@
           <i class="fas fa-clipboard-list"></i><br>لا توجد اختبارات مسجلة
         </td></tr>`;
       }
+    }
+
+    // دالة لترتيب الاختبارات حسب التاريخ (الأحدث أولاً)
+    function sortTestsByDate(tests) {
+      return tests.sort((a, b) => {
+        // تحويل التواريخ إلى كائنات Date للمقارنة
+        const dateA = parseDate(a.date);
+        const dateB = parseDate(b.date);
+        return dateB - dateA; // ترتيب تنازلي (الأحدث أولاً)
+      });
+    }
+
+    // دالة لتحويل النص إلى كائن Date
+    function parseDate(dateString) {
+      if (!dateString) return new Date(0); // تاريخ قديم جداً إذا لم يكن موجوداً
+      
+      // محاولة تحليل التاريخ بصيغ مختلفة
+      const date = new Date(dateString);
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
+      
+      // إذا فشل التحليل، حاول معالجة الصيغ الشائعة
+      const parts = dateString.split(/[/-]/);
+      if (parts.length === 3) {
+        // افتراض أن الصيغة هي يوم/شهر/سنة
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+      }
+      
+      // إذا فشل كل شيء، أعط تاريخاً قديماً
+      return new Date(0);
+    }
+
+    // دالة لترتيب البيانات حسب تاريخ السنة والشهر
+    function sortByDate(data, yearField, monthField) {
+      return data.sort((a, b) => {
+        const yearA = parseInt(a[yearField]) || 0;
+        const yearB = parseInt(b[yearField]) || 0;
+        
+        if (yearA !== yearB) {
+          return yearB - yearA; // السنة الأحدث أولاً
+        }
+        
+        // إذا كانت السنة متساوية، قارن الشهر
+        const monthA = getMonthNumber(a[monthField]);
+        const monthB = getMonthNumber(b[monthField]);
+        
+        return monthB - monthA; // الشهر الأحدث أولاً
+      });
+    }
+
+    // دالة لتحويل اسم الشهر إلى رقم
+    function getMonthNumber(monthName) {
+      const months = {
+        'يناير': 1, 'فبراير': 2, 'مارس': 3, 'أبريل': 4,
+        'مايو': 5, 'يونيو': 6, 'يوليو': 7, 'أغسطس': 8,
+        'سبتمبر': 9, 'أكتوبر': 10, 'نوفمبر': 11, 'ديسمبر': 12
+      };
+      
+      return months[monthName] || 0;
     }
 
     function updateStatistics(student) {
