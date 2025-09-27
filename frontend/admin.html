@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - معهد جيل الأمة</title>
+    <style>
+        :root {
+            --primary-color: #2c786c;
+            --secondary-color: #004445;
+            --accent-color: #f8b400;
+            --text-color: #333;
+            --light-bg: #faf5e4;
+            --success-dark: #2e7d32;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --warning-light: #ffc107;
+            --danger: #f44336;
+            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header::after, .header::before {
+            content: '';
+            position: absolute;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            bottom: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+        }
+
+        .header::before {
+            top: -30px;
+            left: -30px;
+            width: 80px;
+            height: 80px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 20px 0;
+            padding: 0 15px;
+            animation: fadeIn 0.5s ease;
+            box-sizing: border-box;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(44, 120, 108, 0.1);
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            color: var(--secondary-color);
+            border-bottom: 2px solid rgba(44, 120, 108, 0.1);
+            padding-bottom: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-left: 8px;
+            color: var(--accent-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Tajawal';
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 4px 10px rgba(44, 120, 108, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(44, 120, 108, 0.4);
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .student-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .student-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            padding: 15px;
+            transition: all 0.3s ease;
+            border-top: 3px solid rgba(44, 120, 108, 0.2);
+        }
+
+        .student-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .student-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .student-name {
+            font-weight: bold;
+            font-size: 18px;
+            color: var(--secondary-color);
+        }
+
+        .student-code {
+            background: rgba(44, 120, 108, 0.1);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--primary-color);
+        }
+
+        .tests-section {
+            margin-top: 15px;
+        }
+
+        .test-item {
+            background: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .test-info {
+            flex: 1;
+        }
+
+        .test-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .test-details {
+            display: flex;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .test-result {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .test-date {
+            color: #666;
+        }
+
+        .test-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .success {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+
+        .error {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(244, 67, 54, 0.2);
+        }
+
+        .no-data {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            background-color: rgba(0,0,0,0.02);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .no-data i {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: #ccc;
+        }
+
+        @media (min-width: 768px) {
+            .header {
+                padding: 25px 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .container {
+                max-width: 1000px;
+                margin: 30px auto;
+                padding: 0 20px;
+            }
+            
+            .dashboard-card {
+                padding: 30px;
+                border-radius: 12px;
+            }
+            
+            .student-list {
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                gap: 20px;
+            }
+            
+            .student-card {
+                padding: 20px;
+                border-radius: 10px;
+            }
+            
+            .section-title {
+                font-size: 1.4rem;
+                padding-bottom: 12px;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <h1>لوحة تحكم معهد جيل الأمة</h1>
+    </div>
+    
+    <div class="container">
+        <div class="dashboard-card">
+            <div class="tabs">
+                <div class="tab active" data-tab="students">إدارة الطلاب</div>
+                <div class="tab" data-tab="add-student">إضافة طالب جديد</div>
+                <div class="tab" data-tab="add-test">إضافة اختبار</div>
+                <div class="tab" data-tab="monthly-pages">إدارة الصفحات الشهرية</div>
+            </div>
+            
+            <!-- إدارة الطلاب -->
+            <div class="tab-content active" id="students">
+                <h3 class="section-title">
+                    <i class="fas fa-users"></i>
+                    قائمة الطلاب
+                </h3>
+                <div class="student-list" id="studentsList"></div>
+            </div>
+            
+            <!-- إضافة طالب جديد -->
+            <div class="tab-content" id="add-student">
+                <h3 class="section-title">
+                    <i class="fas fa-user-plus"></i>
+                    إضافة طالب جديد
+                </h3>
+                
+                <div class="form-group">
+                    <label for="newStudentName">اسم الطالب</label>
+                    <input type="text" id="newStudentName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="newStudentCode">كود الدخول</label>
+                    <input type="text" id="newStudentCode" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="newStudentLevel">المستوى العام</label>
+                    <select id="newStudentLevel">
+                        <option value="مبتدئ">مبتدئ</option>
+                        <option value="متوسط">متوسط</option>
+                        <option value="متقدم">متقدم</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="newStudentImage">رابط الصورة (اختياري)</label>
+                    <input type="text" id="newStudentImage">
+                </div>
+                
+                <button id="saveStudentBtn" class="btn-primary">حفظ الطالب</button>
+                <div id="studentMessage" class="message"></div>
+            </div>
+            
+            <!-- إضافة اختبار -->
+            <div class="tab-content" id="add-test">
+                <h3 class="section-title">
+                    <i class="fas fa-clipboard-check"></i>
+                    إضافة اختبار جديد
+                </h3>
+                
+                <div class="form-group">
+                    <label for="testStudent">اختر الطالب</label>
+                    <select id="testStudent" required></select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="testType">نوع الاختبار</label>
+                    <select id="testType" required>
+                        <option value="lessonTests">اختبار درس</option>
+                        <option value="tajweedTests">اختبار تجويد</option>
+                        <option value="memorizationTests">اختبار قرآن</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="testName">اسم الاختبار</label>
+                    <input type="text" id="testName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="testResult">النتيجة (من 100)</label>
+                    <input type="number" id="testResult" min="0" max="100" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="testDate">تاريخ الاختبار</label>
+                    <input type="date" id="testDate" required>
+                </div>
+                
+                <button id="saveTestBtn" class="btn-primary">حفظ الاختبار</button>
+                <div id="testMessage" class="message"></div>
+            </div>
+            
+            <!-- إدارة الصفحات الشهرية -->
+            <div class="tab-content" id="monthly-pages">
+                <h3 class="section-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    إدارة الصفحات المحفوظة شهرياً
+                </h3>
+                
+                <div class="form-group">
+                    <label for="pagesStudent">اختر الطالب</label>
+                    <select id="pagesStudent" required></select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pagesMonth">الشهر</label>
+                    <select id="pagesMonth" required>
+                        <option value="1">يناير</option>
+                        <option value="2">فبراير</option>
+                        <option value="3">مارس</option>
+                        <option value="4">أبريل</option>
+                        <option value="5">مايو</option>
+                        <option value="6">يونيو</option>
+                        <option value="7">يوليو</option>
+                        <option value="8">أغسطس</option>
+                        <option value="9">سبتمبر</option>
+                        <option value="10">أكتوبر</option>
+                        <option value="11">نوفمبر</option>
+                        <option value="12">ديسمبر</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pagesYear">السنة</label>
+                    <input type="number" id="pagesYear" min="2020" max="2030" value="2025" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pagesCount">عدد الصفحات المحفوظة</label>
+                    <input type="number" id="pagesCount" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pagesGoal">الهدف الشهري (عدد الصفحات)</label>
+                    <input type="number" id="pagesGoal" min="1" value="20" required>
+                </div>
+                
+                <button id="savePagesBtn" class="btn-primary">حفظ البيانات</button>
+                <div id="pagesMessage" class="message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تعديل الطالب -->
+    <div class="modal" id="editStudentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>تعديل بيانات الطالب</h3>
+                <button class="close-btn" id="closeEditStudentModal">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="editStudentName">اسم الطالب</label>
+                <input type="text" id="editStudentName" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="editStudentCode">كود الدخول</label>
+                <input type="text" id="editStudentCode" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="editStudentLevel">المستوى</label>
+                <select id="editStudentLevel">
+                    <option value="مبتدئ">مبتدئ</option>
+                    <option value="متوسط">متوسط</option>
+                    <option value="متقدم">متقدم</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="editStudentImage">رابط الصورة (اختياري)</label>
+                <input type="text" id="editStudentImage">
+            </div>
+            
+            <div class="actions">
+                <button id="cancelEditStudentBtn" class="btn-danger">إلغاء</button>
+                <button id="saveEditStudentBtn" class="btn-primary">حفظ التعديلات</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:5000/api/students";
+        let currentEditStudentId = null;
+        let studentsData = [];
+
+        // تهيئة التطبيق
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            fetchStudents();
+        });
+
+        // إعداد مستمعي الأحداث
+        function setupEventListeners() {
+            // تبديل التبويبات
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                    
+                    if (tab.dataset.tab === 'add-test' || tab.dataset.tab === 'monthly-pages') {
+                        updateStudentSelects();
+                    }
+                });
+            });
+            
+            // حفظ طالب جديد
+            document.getElementById('saveStudentBtn').addEventListener('click', addStudent);
+            
+            // حفظ اختبار جديد
+            document.getElementById('saveTestBtn').addEventListener('click', addTest);
+            
+            // حفظ صفحات شهرية
+            document.getElementById('savePagesBtn').addEventListener('click', addMonthlyPages);
+            
+            // أحداث نافذة تعديل الطالب
+            document.getElementById('closeEditStudentModal').addEventListener('click', closeEditStudentModal);
+            document.getElementById('cancelEditStudentBtn').addEventListener('click', closeEditStudentModal);
+            document.getElementById('saveEditStudentBtn').addEventListener('click', saveStudentEdit);
+            
+            // إغلاق النافذة عند النقر خارجها
+            document.getElementById('editStudentModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeEditStudentModal();
+                }
+            });
+        }
+
+        // جلب بيانات الطلاب
+        async function fetchStudents() {
+            try {
+                const res = await fetch(API_URL);
+                const students = await res.json();
+                studentsData = students;
+                renderStudents(students);
+            } catch (error) {
+                console.error('Error fetching students:', error);
+                showMessage('studentMessage', 'حدث خطأ أثناء جلب بيانات الطلاب', 'error');
+            }
+        }
+
+        // عرض قائمة الطلاب
+        function renderStudents(students) {
+            const studentsList = document.getElementById('studentsList');
+            studentsList.innerHTML = '';
+            
+            if (students.length === 0) {
+                studentsList.innerHTML = `
+                    <div class="no-data">
+                        <i class="far fa-folder-open"></i>
+                        <p>لا يوجد طلاب مسجلين</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            students.forEach(student => {
+                const studentCard = document.createElement('div');
+                studentCard.className = 'student-card';
+                
+                studentCard.innerHTML = `
+                    <div class="student-header">
+                        <div class="student-name">${student.name}</div>
+                        <div class="student-code">${student.code}</div>
+                    </div>
+                    
+                    <div class="student-level">المستوى: ${student.overallLevel || 'غير محدد'}</div>
+                    
+                    <div class="tests-section">
+                        <h4>اختبارات الدروس</h4>
+                        ${renderTests(student.lessonTests)}
+                    </div>
+                    
+                    <div class="tests-section">
+                        <h4>اختبارات التجويد</h4>
+                        ${renderTests(student.tajweedTests)}
+                    </div>
+                    
+                    <div class="tests-section">
+                        <h4>اختبارات القرآن</h4>
+                        ${renderTests(student.memorizationTests)}
+                    </div>
+                    
+                    <div class="tests-section">
+                        <h4>الصفحات المحفوظة</h4>
+                        ${renderMonthlyPages(student.monthlyPages || [])}
+                    </div>
+                    
+                    <div class="actions">
+                        <button class="btn-edit edit-btn" data-id="${student._id}">تعديل الطالب</button>
+                        <button class="btn-danger delete-btn" data-id="${student._id}">حذف الطالب</button>
+                    </div>
+                `;
+                
+                studentsList.appendChild(studentCard);
+            });
+            
+            // إضافة مستمعي الأحداث لأزرار الحذف والتعديل
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    deleteStudent(id);
+                });
+            });
+            
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    openEditStudentModal(id);
+                });
+            });
+        }
+
+        // عرض الاختبارات
+        function renderTests(tests) {
+            if (!tests || tests.length === 0) {
+                return '<p>لا توجد اختبارات مسجلة</p>';
+            }
+            
+            return tests.map(test => `
+                <div class="test-item">
+                    <div class="test-info">
+                        <div class="test-name">${test.testName || test.lessonName}</div>
+                        <div class="test-details">
+                            <span class="test-result">${test.result}%</span>
+                            <span class="test-date">${formatDate(test.date)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // عرض الصفحات المحفوظة شهرياً
+        function renderMonthlyPages(monthlyPages) {
+            if (!monthlyPages || monthlyPages.length === 0) {
+                return '<p>لا توجد بيانات عن الصفحات المحفوظة</p>';
+            }
+            
+            // ترتيب البيانات من الأحدث إلى الأقدم
+            monthlyPages.sort((a, b) => new Date(b.year, b.month - 1) - new Date(a.year, a.month - 1));
+            
+            return monthlyPages.slice(0, 3).map(monthData => {
+                const monthNames = [
+                    'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+                    'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+                ];
+                
+                const monthName = monthNames[monthData.month - 1];
+                const pagesCount = monthData.pages || 0;
+                const goal = monthData.goal || 20;
+                const progressPercent = Math.min(100, (pagesCount / goal) * 100);
+                
+                return `
+                    <div class="test-item">
+                        <div class="test-info">
+                            <div class="test-name">${monthName} ${monthData.year}</div>
+                            <div class="test-details">
+                                <span class="test-result">${pagesCount} صفحة</span>
+                                <span class="test-date">الهدف: ${goal}</span>
+                            </div>
+                        </div>
+                        <div class="test-actions">
+                            <span>${progressPercent.toFixed(0)}%</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // تحديث قوائم اختيار الطلاب
+        function updateStudentSelects() {
+            const testSelect = document.getElementById('testStudent');
+            const pagesSelect = document.getElementById('pagesStudent');
+            
+            testSelect.innerHTML = '';
+            pagesSelect.innerHTML = '';
+            
+            // استخدام البيانات المخزنة محلياً
+            if (studentsData.length === 0) {
+                testSelect.innerHTML = '<option value="">لا يوجد طلاب مسجلين</option>';
+                pagesSelect.innerHTML = '<option value="">لا يوجد طلاب مسجلين</option>';
+                return;
+            }
+            
+            studentsData.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student._id;
+                option.textContent = `${student.name} (${student.code})`;
+                
+                testSelect.appendChild(option.cloneNode(true));
+                pagesSelect.appendChild(option.cloneNode(true));
+            });
+        }
+
+        // تنسيق التاريخ
+        function formatDate(dateString) {
+            if (!dateString) return 'غير محدد';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-EG');
+        }
+
+        // فتح نافذة تعديل الطالب
+        function openEditStudentModal(id) {
+            // البحث عن الطالب في البيانات المخزنة محلياً
+            const student = studentsData.find(s => s._id === id);
+            
+            if (student) {
+                currentEditStudentId = id;
+                
+                document.getElementById('editStudentName').value = student.name || '';
+                document.getElementById('editStudentCode').value = student.code || '';
+                document.getElementById('editStudentLevel').value = student.overallLevel || 'مبتدئ';
+                document.getElementById('editStudentImage').value = student.image || '';
+                
+                document.getElementById('editStudentModal').style.display = 'flex';
+            } else {
+                showMessage('studentMessage', 'لم يتم العثور على بيانات الطالب', 'error');
+            }
+        }
+
+        // إغلاق نافذة تعديل الطالب
+        function closeEditStudentModal() {
+            document.getElementById('editStudentModal').style.display = 'none';
+            currentEditStudentId = null;
+        }
+
+        // حفظ تعديلات الطالب
+        async function saveStudentEdit() {
+            if (!currentEditStudentId) {
+                showMessage('studentMessage', 'لم يتم تحديد طالب للتعديل', 'error');
+                return;
+            }
+            
+            const name = document.getElementById('editStudentName').value.trim();
+            const code = document.getElementById('editStudentCode').value.trim();
+            const level = document.getElementById('editStudentLevel').value;
+            const image = document.getElementById('editStudentImage').value.trim();
+            
+            if (!name || !code) {
+                showMessage('studentMessage', 'الرجاء إدخال اسم الطالب وكود الدخول', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/${currentEditStudentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        code: code,
+                        overallLevel: level,
+                        image: image
+                    })
+                });
+                
+                if (response.ok) {
+                    closeEditStudentModal();
+                    fetchStudents(); // إعادة جلب البيانات من الخادم
+                    showMessage('studentMessage', 'تم تحديث بيانات الطالب بنجاح', 'success');
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'فشل في تحديث بيانات الطالب');
+                }
+            } catch (error) {
+                console.error('Error updating student:', error);
+                showMessage('studentMessage', `حدث خطأ أثناء تحديث بيانات الطالب: ${error.message}`, 'error');
+            }
+        }
+
+        // حذف طالب
+        async function deleteStudent(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا الطالب؟ سيتم حذف جميع اختباراته أيضاً.')) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+                
+                if (response.ok) {
+                    showMessage('studentMessage', 'تم حذف الطالب بنجاح', 'success');
+                    fetchStudents();
+                } else {
+                    throw new Error('فشل في حذف الطالب');
+                }
+            } catch (error) {
+                console.error('Error deleting student:', error);
+                showMessage('studentMessage', 'حدث خطأ أثناء حذف الطالب', 'error');
+            }
+        }
+
+        // إضافة طالب جديد
+        async function addStudent() {
+            const name = document.getElementById('newStudentName').value.trim();
+            const code = document.getElementById('newStudentCode').value.trim();
+            const level = document.getElementById('newStudentLevel').value;
+            const image = document.getElementById('newStudentImage').value.trim();
+            
+            if (!name || !code) {
+                showMessage('studentMessage', 'الرجاء إدخال اسم الطالب وكود الدخول', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, code, overallLevel: level, image })
+                });
+                
+                if (response.ok) {
+                    // مسح الحقول
+                    document.getElementById('newStudentName').value = '';
+                    document.getElementById('newStudentCode').value = '';
+                    document.getElementById('newStudentImage').value = '';
+                    
+                    showMessage('studentMessage', 'تم إضافة الطالب بنجاح', 'success');
+                    fetchStudents();
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'فشل في إضافة الطالب');
+                }
+            } catch (error) {
+                console.error('Error adding student:', error);
+                showMessage('studentMessage', `حدث خطأ أثناء إضافة الطالب: ${error.message}`, 'error');
+            }
+        }
+
+        // إضافة اختبار جديد
+        async function addTest() {
+            const studentId = document.getElementById('testStudent').value;
+            const testType = document.getElementById('testType').value;
+            const testName = document.getElementById('testName').value.trim();
+            const testResult = document.getElementById('testResult').value;
+            const testDate = document.getElementById('testDate').value;
+            
+            if (!studentId || !testName || !testResult || !testDate) {
+                showMessage('testMessage', 'الرجاء تعبئة جميع حقول الاختبار', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/${studentId}/tests`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ testType, testName, result: testResult, date: testDate })
+                });
+                
+                if (response.ok) {
+                    // مسح الحقول
+                    document.getElementById('testName').value = '';
+                    document.getElementById('testResult').value = '';
+                    document.getElementById('testDate').value = '';
+                    
+                    showMessage('testMessage', 'تم إضافة الاختبار بنجاح', 'success');
+                    fetchStudents();
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'فشل في إضافة الاختبار');
+                }
+            } catch (error) {
+                console.error('Error adding test:', error);
+                showMessage('testMessage', `حدث خطأ أثناء إضافة الاختبار: ${error.message}`, 'error');
+            }
+        }
+
+        // إضافة صفحات شهرية
+        async function addMonthlyPages() {
+            const studentId = document.getElementById('pagesStudent').value;
+            const month = parseInt(document.getElementById('pagesMonth').value);
+            const year = parseInt(document.getElementById('pagesYear').value);
+            const pages = parseInt(document.getElementById('pagesCount').value);
+            const goal = parseInt(document.getElementById('pagesGoal').value);
+            
+            if (!studentId || !month || !year || !pages) {
+                showMessage('pagesMessage', 'الرجاء تعبئة جميع الحقول المطلوبة', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/${studentId}/monthly-pages`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ month, year, pages, goal })
+                });
+                
+                if (response.ok) {
+                    // مسح الحقول
+                    document.getElementById('pagesCount').value = '';
+                    
+                    showMessage('pagesMessage', 'تم حفظ بيانات الصفحات بنجاح', 'success');
+                    fetchStudents();
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'فشل في حفظ بيانات الصفحات');
+                }
+            } catch (error) {
+                console.error('Error adding monthly pages:', error);
+                showMessage('pagesMessage', `حدث خطأ أثناء حفظ الصفحات الشهرية: ${error.message}`, 'error');
+            }
+        }
+
+        // عرض الرسائل
+        function showMessage(elementId, text, type) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            element.textContent = text;
+            element.className = 'message ' + type;
+            element.style.display = 'block';
+            
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
