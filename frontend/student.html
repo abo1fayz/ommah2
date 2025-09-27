@@ -16,11 +16,6 @@
       --danger-color: #c62828;
       --danger-dark: #a00000;
       --success-color: #2e7d32;
-      --excellent-color: #1565c0;
-      --very-good-color: #7b1fa2;
-      --good-color: #388e3c;
-      --average-color: #f57c00;
-      --weak-color: #d32f2f;
       --light-bg: #f8f9fa;
       --text-dark: #333;
       --text-light: #666;
@@ -328,49 +323,43 @@
     
     .result-cell {
       font-weight: 600;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
     }
     
-    .result-value {
-      font-size: 16px;
-    }
-    
-    .result-rating {
-      font-size: 14px;
-      padding: 3px 8px;
-      border-radius: 12px;
-      color: white;
+    .rating-cell {
       font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: inline-block;
     }
     
     .rating-excellent {
-      background-color: var(--excellent-color);
+      background-color: #e3f2fd;
+      color: #1565c0;
+      border: 1px solid #1565c0;
     }
     
     .rating-very-good {
-      background-color: var(--very-good-color);
+      background-color: #f3e5f5;
+      color: #7b1fa2;
+      border: 1px solid #7b1fa2;
     }
     
     .rating-good {
-      background-color: var(--good-color);
+      background-color: #e8f5e8;
+      color: #2e7d32;
+      border: 1px solid #2e7d32;
     }
     
     .rating-average {
-      background-color: var(--average-color);
+      background-color: #fff3e0;
+      color: #ef6c00;
+      border: 1px solid #ef6c00;
     }
     
     .rating-weak {
-      background-color: var(--weak-color);
-    }
-    
-    .sort-indicator {
-      margin-right: 5px;
-      font-size: 12px;
+      background-color: #ffebee;
+      color: #c62828;
+      border: 1px solid #c62828;
     }
     
     @media (max-width: 768px) {
@@ -411,9 +400,9 @@
         left: -5px;
       }
       
-      .result-cell {
-        flex-direction: column;
-        gap: 4px;
+      .rating-cell {
+        font-size: 12px;
+        padding: 4px 8px;
       }
     }
   </style>
@@ -457,7 +446,7 @@
       </div>
     </div>
     <table id="lessonTestsTable">
-      <tr><th>اسم الدرس</th><th>النتيجة</th><th>التاريخ</th></tr>
+      <tr><th>اسم الدرس</th><th>النتيجة</th><th>التقييم</th><th>التاريخ</th></tr>
     </table>
 
     <div class="section-header">
@@ -467,7 +456,7 @@
       </div>
     </div>
     <table id="tajweedTestsTable">
-      <tr><th>اسم الاختبار</th><th>النتيجة</th><th>التاريخ</th></tr>
+      <tr><th>اسم الاختبار</th><th>النتيجة</th><th>التقييم</th><th>التاريخ</th></tr>
     </table>
 
     <div class="section-header">
@@ -477,7 +466,7 @@
       </div>
     </div>
     <table id="memorizationTestsTable">
-      <tr><th>اسم الاختبار</th><th>النتيجة</th><th>التاريخ</th></tr>
+      <tr><th>اسم الاختبار</th><th>النتيجة</th><th>التقييم</th><th>التاريخ</th></tr>
     </table>
 
     <div class="section-header">
@@ -576,16 +565,14 @@
           
           const row = `<tr${index === 0 ? ' class="latest-row"' : ''}>
             <td>${t[nameField]}${index === 0 ? '<span class="latest-badge">الأحدث</span>' : ''}</td>
-            <td class="result-cell">
-              <span class="result-value">${t.result}</span>
-              <span class="result-rating ${rating.class}">${rating.text}</span>
-            </td>
+            <td class="result-cell">${t.result}</td>
+            <td><span class="rating-cell ${rating.class}">${rating.text}</span></td>
             <td>${t.date}</td>
           </tr>`;
           table.innerHTML += row;
         });
       } else {
-        table.innerHTML += `<tr><td colspan="3" class="empty-state">
+        table.innerHTML += `<tr><td colspan="4" class="empty-state">
           <i class="fas fa-clipboard-list"></i><br>لا توجد اختبارات مسجلة
         </td></tr>`;
       }
