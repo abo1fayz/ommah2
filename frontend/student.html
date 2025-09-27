@@ -16,6 +16,11 @@
       --danger-color: #c62828;
       --danger-dark: #a00000;
       --success-color: #2e7d32;
+      --excellent-color: #1565c0;
+      --very-good-color: #7b1fa2;
+      --good-color: #388e3c;
+      --average-color: #f57c00;
+      --weak-color: #d32f2f;
       --light-bg: #f8f9fa;
       --text-dark: #333;
       --text-light: #666;
@@ -324,18 +329,43 @@
     .result-cell {
       font-weight: 600;
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
     
-    .result-cell.high {
-      color: var(--success-color);
+    .result-value {
+      font-size: 16px;
     }
     
-    .result-cell.medium {
-      color: var(--secondary-color);
+    .result-rating {
+      font-size: 14px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
     }
     
-    .result-cell.low {
-      color: var(--danger-color);
+    .rating-excellent {
+      background-color: var(--excellent-color);
+    }
+    
+    .rating-very-good {
+      background-color: var(--very-good-color);
+    }
+    
+    .rating-good {
+      background-color: var(--good-color);
+    }
+    
+    .rating-average {
+      background-color: var(--average-color);
+    }
+    
+    .rating-weak {
+      background-color: var(--weak-color);
     }
     
     .sort-indicator {
@@ -379,6 +409,11 @@
         font-size: 10px;
         padding: 3px 8px;
         left: -5px;
+      }
+      
+      .result-cell {
+        flex-direction: column;
+        gap: 4px;
       }
     }
   </style>
@@ -507,6 +542,28 @@
       updateStatistics(student);
     };
 
+    // دالة لتحديد التقييم بناءً على النتيجة
+    function getRating(result) {
+      if (!result) return { text: "غير محدد", class: "" };
+      
+      // استخراج الرقم من النتيجة (في حالة وجود % أو نص آخر)
+      const resultValue = parseInt(result.toString().replace(/\D/g, ''));
+      
+      if (isNaN(resultValue)) return { text: "غير محدد", class: "" };
+      
+      if (resultValue >= 97 && resultValue <= 100) {
+        return { text: "تفوق", class: "rating-excellent" };
+      } else if (resultValue >= 94 && resultValue <= 96) {
+        return { text: "ممتاز", class: "rating-very-good" };
+      } else if (resultValue >= 90 && resultValue <= 93) {
+        return { text: "جيد جداً", class: "rating-good" };
+      } else if (resultValue >= 80 && resultValue <= 89) {
+        return { text: "جيد", class: "rating-average" };
+      } else {
+        return { text: "إعادة", class: "rating-weak" };
+      }
+    }
+
     function fillTable(tableId, tests, nameField) {
       const table = document.getElementById(tableId);
       if (tests && tests.length > 0) {
@@ -514,22 +571,15 @@
         const sortedTests = sortTestsByDate(tests);
         
         sortedTests.forEach((t, index) => {
-          // تحديد لون النتيجة بناءً على القيمة
-          let resultClass = "";
-          if (t.result && typeof t.result === 'string') {
-            const resultValue = parseInt(t.result.replace('%', ''));
-            if (resultValue >= 80) {
-              resultClass = "high";
-            } else if (resultValue >= 60) {
-              resultClass = "medium";
-            } else {
-              resultClass = "low";
-            }
-          }
+          // الحصول على التقييم المناسب للنتيجة
+          const rating = getRating(t.result);
           
           const row = `<tr${index === 0 ? ' class="latest-row"' : ''}>
             <td>${t[nameField]}${index === 0 ? '<span class="latest-badge">الأحدث</span>' : ''}</td>
-            <td class="result-cell ${resultClass}">${t.result}</td>
+            <td class="result-cell">
+              <span class="result-value">${t.result}</span>
+              <span class="result-rating ${rating.class}">${rating.text}</span>
+            </td>
             <td>${t.date}</td>
           </tr>`;
           table.innerHTML += row;
