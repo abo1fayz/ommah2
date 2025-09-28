@@ -201,13 +201,18 @@
             color: white;
         }
 
-        .student-list {
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .student-list, .competition-list {
             display: grid;
             grid-template-columns: 1fr;
             gap: 15px;
         }
 
-        .student-card {
+        .student-card, .competition-card {
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
@@ -216,12 +221,12 @@
             border-top: 3px solid rgba(44, 120, 108, 0.2);
         }
 
-        .student-card:hover {
+        .student-card:hover, .competition-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .student-header {
+        .student-header, .competition-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -230,13 +235,13 @@
             border-bottom: 1px solid #eee;
         }
 
-        .student-name {
+        .student-name, .competition-title {
             font-weight: bold;
             font-size: 18px;
             color: var(--secondary-color);
         }
 
-        .student-code {
+        .student-code, .competition-type {
             background: rgba(44, 120, 108, 0.1);
             padding: 3px 10px;
             border-radius: 20px;
@@ -367,6 +372,46 @@
             color: #ccc;
         }
 
+        .winner-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .winner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .winner-position {
+            background: var(--accent-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .winner-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
         @media (min-width: 768px) {
             .header {
                 padding: 25px 20px;
@@ -387,12 +432,12 @@
                 border-radius: 12px;
             }
             
-            .student-list {
+            .student-list, .competition-list {
                 grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
                 gap: 20px;
             }
             
-            .student-card {
+            .student-card, .competition-card {
                 padding: 20px;
                 border-radius: 10px;
             }
@@ -418,6 +463,8 @@
                 <div class="tab" data-tab="add-student">إضافة طالب جديد</div>
                 <div class="tab" data-tab="add-test">إضافة اختبار</div>
                 <div class="tab" data-tab="monthly-pages">إدارة الصفحات الشهرية</div>
+                <div class="tab" data-tab="competitions">إدارة المسابقات</div> <!-- ✅ جديد -->
+                <div class="tab" data-tab="add-competition">إضافة مسابقة</div> <!-- ✅ جديد -->
             </div>
             
             <!-- إدارة الطلاب -->
@@ -552,6 +599,80 @@
                 <button id="savePagesBtn" class="btn-primary">حفظ البيانات</button>
                 <div id="pagesMessage" class="message"></div>
             </div>
+
+            <!-- ✅ جديد: إدارة المسابقات -->
+            <div class="tab-content" id="competitions">
+                <h3 class="section-title">
+                    <i class="fas fa-trophy"></i>
+                    إدارة المسابقات
+                </h3>
+                <div class="competition-list" id="competitionsList"></div>
+            </div>
+
+            <!-- ✅ جديد: إضافة مسابقة -->
+            <div class="tab-content" id="add-competition">
+                <h3 class="section-title">
+                    <i class="fas fa-plus-circle"></i>
+                    إضافة مسابقة جديدة
+                </h3>
+                
+                <div class="form-group">
+                    <label for="competitionTitle">عنوان المسابقة</label>
+                    <input type="text" id="competitionTitle" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="competitionDescription">وصف المسابقة</label>
+                    <textarea id="competitionDescription" rows="3"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="competitionType">نوع المسابقة</label>
+                        <select id="competitionType" required>
+                            <option value="تلاوة">تلاوة</option>
+                            <option value="حفظ">حفظ</option>
+                            <option value="تجويد">تجويد</option>
+                            <option value="أنشطة">أنشطة</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="competitionStatus">حالة المسابقة</label>
+                        <select id="competitionStatus" required>
+                            <option value="قادمة">قادمة</option>
+                            <option value="جارية">جارية</option>
+                            <option value="منتهية">منتهية</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="competitionDate">تاريخ المسابقة</label>
+                        <input type="date" id="competitionDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="competitionLocation">مكان المسابقة</label>
+                        <input type="text" id="competitionLocation">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="competitionCriteria">معايير التقييم</label>
+                    <input type="text" id="competitionCriteria" placeholder="مثال: النطق الصحيح, الحفظ المتقن...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="competitionImage">رابط صورة المسابقة (اختياري)</label>
+                    <input type="text" id="competitionImage">
+                </div>
+                
+                <button id="saveCompetitionBtn" class="btn-primary">حفظ المسابقة</button>
+                <div id="competitionMessage" class="message"></div>
+            </div>
         </div>
     </div>
 
@@ -594,15 +715,60 @@
         </div>
     </div>
 
+    <!-- ✅ جديد: نافذة إضافة فائز -->
+    <div class="modal" id="addWinnerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>إضافة فائز للمسابقة</h3>
+                <button class="close-btn" id="closeAddWinnerModal">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="winnerStudentCode">كود الطالب الفائز</label>
+                <input type="text" id="winnerStudentCode" required placeholder="أدخل كود الطالب المكون من 6 أرقام">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="winnerPosition">المركز</label>
+                    <select id="winnerPosition" required>
+                        <option value="1">المركز الأول</option>
+                        <option value="2">المركز الثاني</option>
+                        <option value="3">المركز الثالث</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="winnerPrize">الجائزة</label>
+                    <input type="text" id="winnerPrize" placeholder="اختياري">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="winnerNotes">ملاحظات</label>
+                <textarea id="winnerNotes" rows="2" placeholder="ملاحظات إضافية عن الفائز"></textarea>
+            </div>
+            
+            <div class="actions">
+                <button id="cancelAddWinnerBtn" class="btn-danger">إلغاء</button>
+                <button id="saveWinnerBtn" class="btn-primary">حفظ الفائز</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_URL = "https://ommah2.onrender.com/api/students";
+        const COMPETITIONS_API_URL = "https://ommah2.onrender.com/api/competitions"; // ✅ جديد
         let currentEditStudentId = null;
+        let currentCompetitionId = null; // ✅ جديد
         let studentsData = [];
+        let competitionsData = []; // ✅ جديد
 
         // تهيئة التطبيق
         document.addEventListener('DOMContentLoaded', function() {
             setupEventListeners();
             fetchStudents();
+            fetchCompetitions(); // ✅ جديد
         });
 
         // إعداد مستمعي الأحداث
@@ -631,15 +797,29 @@
             // حفظ صفحات شهرية
             document.getElementById('savePagesBtn').addEventListener('click', addMonthlyPages);
             
+            // ✅ جديد: حفظ مسابقة جديدة
+            document.getElementById('saveCompetitionBtn').addEventListener('click', addCompetition);
+            
             // أحداث نافذة تعديل الطالب
             document.getElementById('closeEditStudentModal').addEventListener('click', closeEditStudentModal);
             document.getElementById('cancelEditStudentBtn').addEventListener('click', closeEditStudentModal);
             document.getElementById('saveEditStudentBtn').addEventListener('click', saveStudentEdit);
             
-            // إغلاق النافذة عند النقر خارجها
+            // ✅ جديد: أحداث نافذة إضافة فائز
+            document.getElementById('closeAddWinnerModal').addEventListener('click', closeAddWinnerModal);
+            document.getElementById('cancelAddWinnerBtn').addEventListener('click', closeAddWinnerModal);
+            document.getElementById('saveWinnerBtn').addEventListener('click', saveWinner);
+            
+            // إغلاق النوافذ عند النقر خارجها
             document.getElementById('editStudentModal').addEventListener('click', function(e) {
                 if (e.target === this) {
                     closeEditStudentModal();
+                }
+            });
+            
+            document.getElementById('addWinnerModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeAddWinnerModal();
                 }
             });
         }
@@ -654,6 +834,19 @@
             } catch (error) {
                 console.error('Error fetching students:', error);
                 showMessage('studentMessage', 'حدث خطأ أثناء جلب بيانات الطلاب', 'error');
+            }
+        }
+
+        // ✅ جديد: جلب بيانات المسابقات
+        async function fetchCompetitions() {
+            try {
+                const res = await fetch(COMPETITIONS_API_URL);
+                const competitions = await res.json();
+                competitionsData = competitions;
+                renderCompetitions(competitions);
+            } catch (error) {
+                console.error('Error fetching competitions:', error);
+                showMessage('competitionMessage', 'حدث خطأ أثناء جلب بيانات المسابقات', 'error');
             }
         }
 
@@ -727,6 +920,91 @@
                     openEditStudentModal(id);
                 });
             });
+        }
+
+        // ✅ جديد: عرض قائمة المسابقات
+        function renderCompetitions(competitions) {
+            const competitionsList = document.getElementById('competitionsList');
+            competitionsList.innerHTML = '';
+            
+            if (competitions.length === 0) {
+                competitionsList.innerHTML = `
+                    <div class="no-data">
+                        <i class="far fa-trophy"></i>
+                        <p>لا توجد مسابقات مسجلة</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            competitions.forEach(competition => {
+                const competitionCard = document.createElement('div');
+                competitionCard.className = 'competition-card';
+                
+                competitionCard.innerHTML = `
+                    <div class="competition-header">
+                        <div class="competition-title">${competition.title}</div>
+                        <div class="competition-type">${competition.type}</div>
+                    </div>
+                    
+                    <div class="competition-details">
+                        <div><strong>التاريخ:</strong> ${formatDate(competition.date)}</div>
+                        <div><strong>المكان:</strong> ${competition.location || 'غير محدد'}</div>
+                        <div><strong>الحالة:</strong> ${getStatusText(competition.status)}</div>
+                        ${competition.criteria ? `<div><strong>المعايير:</strong> ${competition.criteria}</div>` : ''}
+                    </div>
+                    
+                    <div class="winners-section">
+                        <h4>الفائزون</h4>
+                        ${renderCompetitionWinners(competition.winners)}
+                    </div>
+                    
+                    <div class="actions">
+                        <button class="btn-success add-winner-btn" data-id="${competition._id}">إضافة فائز</button>
+                        <button class="btn-danger delete-competition-btn" data-id="${competition._id}">حذف المسابقة</button>
+                    </div>
+                `;
+                
+                competitionsList.appendChild(competitionCard);
+            });
+            
+            // إضافة مستمعي الأحداث لأزرار المسابقات
+            document.querySelectorAll('.add-winner-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    openAddWinnerModal(id);
+                });
+            });
+            
+            document.querySelectorAll('.delete-competition-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    deleteCompetition(id);
+                });
+            });
+        }
+
+        // ✅ جديد: عرض فائزي المسابقة
+        function renderCompetitionWinners(winners) {
+            if (!winners || winners.length === 0) {
+                return '<div class="no-data">لا توجد نتائج للفائزين بعد</div>';
+            }
+            
+            const sortedWinners = [...winners].sort((a, b) => a.position - b.position);
+            
+            return sortedWinners.map(winner => `
+                <div class="winner-item">
+                    <div class="winner-header">
+                        <div class="winner-position">${winner.position}</div>
+                        <div class="winner-name">${winner.studentName}</div>
+                    </div>
+                    <div class="winner-details">
+                        <div><strong>الكود:</strong> ${winner.studentCode}</div>
+                        ${winner.prize ? `<div><strong>الجائزة:</strong> ${winner.prize}</div>` : ''}
+                        ${winner.notes ? `<div><strong>ملاحظات:</strong> ${winner.notes}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
         }
 
         // عرض الاختبارات
@@ -817,6 +1095,16 @@
             return date.toLocaleDateString('ar-EG');
         }
 
+        // ✅ جديد: نص حالة المسابقة
+        function getStatusText(status) {
+            const statusMap = {
+                'قادمة': 'قادمة',
+                'جارية': 'جارية',
+                'منتهية': 'منتهية'
+            };
+            return statusMap[status] || status;
+        }
+
         // فتح نافذة تعديل الطالب
         function openEditStudentModal(id) {
             // البحث عن الطالب في البيانات المخزنة محلياً
@@ -836,10 +1124,26 @@
             }
         }
 
+        // ✅ جديد: فتح نافذة إضافة فائز
+        function openAddWinnerModal(id) {
+            currentCompetitionId = id;
+            document.getElementById('winnerStudentCode').value = '';
+            document.getElementById('winnerPosition').value = '1';
+            document.getElementById('winnerPrize').value = '';
+            document.getElementById('winnerNotes').value = '';
+            document.getElementById('addWinnerModal').style.display = 'flex';
+        }
+
         // إغلاق نافذة تعديل الطالب
         function closeEditStudentModal() {
             document.getElementById('editStudentModal').style.display = 'none';
             currentEditStudentId = null;
+        }
+
+        // ✅ جديد: إغلاق نافذة إضافة فائز
+        function closeAddWinnerModal() {
+            document.getElementById('addWinnerModal').style.display = 'none';
+            currentCompetitionId = null;
         }
 
         // حفظ تعديلات الطالب
@@ -860,176 +1164,4 @@
             }
             
             try {
-                const response = await fetch(`${API_URL}/${currentEditStudentId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        code: code,
-                        overallLevel: level,
-                        image: image
-                    })
-                });
-                
-                if (response.ok) {
-                    closeEditStudentModal();
-                    fetchStudents(); // إعادة جلب البيانات من الخادم
-                    showMessage('studentMessage', 'تم تحديث بيانات الطالب بنجاح', 'success');
-                } else {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'فشل في تحديث بيانات الطالب');
-                }
-            } catch (error) {
-                console.error('Error updating student:', error);
-                showMessage('studentMessage', `حدث خطأ أثناء تحديث بيانات الطالب: ${error.message}`, 'error');
-            }
-        }
-
-        // حذف طالب
-        async function deleteStudent(id) {
-            if (!confirm('هل أنت متأكد من حذف هذا الطالب؟ سيتم حذف جميع اختباراته أيضاً.')) return;
-            
-            try {
-                const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-                
-                if (response.ok) {
-                    showMessage('studentMessage', 'تم حذف الطالب بنجاح', 'success');
-                    fetchStudents();
-                } else {
-                    throw new Error('فشل في حذف الطالب');
-                }
-            } catch (error) {
-                console.error('Error deleting student:', error);
-                showMessage('studentMessage', 'حدث خطأ أثناء حذف الطالب', 'error');
-            }
-        }
-
-        // إضافة طالب جديد
-        async function addStudent() {
-            const name = document.getElementById('newStudentName').value.trim();
-            const code = document.getElementById('newStudentCode').value.trim();
-            const level = document.getElementById('newStudentLevel').value;
-            const image = document.getElementById('newStudentImage').value.trim();
-            
-            if (!name || !code) {
-                showMessage('studentMessage', 'الرجاء إدخال اسم الطالب وكود الدخول', 'error');
-                return;
-            }
-            
-            try {
-                const response = await fetch(API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, code, overallLevel: level, image })
-                });
-                
-                if (response.ok) {
-                    // مسح الحقول
-                    document.getElementById('newStudentName').value = '';
-                    document.getElementById('newStudentCode').value = '';
-                    document.getElementById('newStudentImage').value = '';
-                    
-                    showMessage('studentMessage', 'تم إضافة الطالب بنجاح', 'success');
-                    fetchStudents();
-                } else {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'فشل في إضافة الطالب');
-                }
-            } catch (error) {
-                console.error('Error adding student:', error);
-                showMessage('studentMessage', `حدث خطأ أثناء إضافة الطالب: ${error.message}`, 'error');
-            }
-        }
-
-        // إضافة اختبار جديد
-        async function addTest() {
-            const studentId = document.getElementById('testStudent').value;
-            const testType = document.getElementById('testType').value;
-            const testName = document.getElementById('testName').value.trim();
-            const testResult = document.getElementById('testResult').value;
-            const testDate = document.getElementById('testDate').value;
-            
-            if (!studentId || !testName || !testResult || !testDate) {
-                showMessage('testMessage', 'الرجاء تعبئة جميع حقول الاختبار', 'error');
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${API_URL}/${studentId}/tests`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ testType, testName, result: testResult, date: testDate })
-                });
-                
-                if (response.ok) {
-                    // مسح الحقول
-                    document.getElementById('testName').value = '';
-                    document.getElementById('testResult').value = '';
-                    document.getElementById('testDate').value = '';
-                    
-                    showMessage('testMessage', 'تم إضافة الاختبار بنجاح', 'success');
-                    fetchStudents();
-                } else {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'فشل في إضافة الاختبار');
-                }
-            } catch (error) {
-                console.error('Error adding test:', error);
-                showMessage('testMessage', `حدث خطأ أثناء إضافة الاختبار: ${error.message}`, 'error');
-            }
-        }
-
-        // إضافة صفحات شهرية
-        async function addMonthlyPages() {
-            const studentId = document.getElementById('pagesStudent').value;
-            const month = parseInt(document.getElementById('pagesMonth').value);
-            const year = parseInt(document.getElementById('pagesYear').value);
-            const pages = parseInt(document.getElementById('pagesCount').value);
-            const goal = parseInt(document.getElementById('pagesGoal').value);
-            
-            if (!studentId || !month || !year || !pages) {
-                showMessage('pagesMessage', 'الرجاء تعبئة جميع الحقول المطلوبة', 'error');
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${API_URL}/${studentId}/monthly-pages`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ month, year, pages, goal })
-                });
-                
-                if (response.ok) {
-                    // مسح الحقول
-                    document.getElementById('pagesCount').value = '';
-                    
-                    showMessage('pagesMessage', 'تم حفظ بيانات الصفحات بنجاح', 'success');
-                    fetchStudents();
-                } else {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'فشل في حفظ بيانات الصفحات');
-                }
-            } catch (error) {
-                console.error('Error adding monthly pages:', error);
-                showMessage('pagesMessage', `حدث خطأ أثناء حفظ الصفحات الشهرية: ${error.message}`, 'error');
-            }
-        }
-
-        // عرض الرسائل
-        function showMessage(elementId, text, type) {
-            const element = document.getElementById(elementId);
-            if (!element) return;
-            
-            element.textContent = text;
-            element.className = 'message ' + type;
-            element.style.display = 'block';
-            
-            setTimeout(() => {
-                element.style.display = 'none';
-            }, 5000);
-        }
-    </script>
-</body>
-</html>
+                const response = await fetch(`${API_URL
