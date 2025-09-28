@@ -99,6 +99,24 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+    .competitions-link {
+      display: inline-block;
+      background-color: #f8b400;
+      color: white;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+      width: 100%;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    .competitions-link:hover {
+      background-color: #e6a200;
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 <body>
@@ -114,6 +132,11 @@
     </div>
 
     <button id="loginBtn">دخول</button>
+
+    <!-- زر المسابقات الجديد -->
+    <a href="competitions.html" class="competitions-link">
+      🏆 المسابقات والفائزين
+    </a>
 
     <div id="message" class="message"></div>
     <div id="loading" class="loading">
@@ -184,4 +207,4 @@
     });
   </script>
 </body>
-        </html>
+</html>
