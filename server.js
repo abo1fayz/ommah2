@@ -6,6 +6,7 @@ require("dotenv").config();
 
 const connectDB = require("./config/db");
 const studentRoutes = require("./routes/studentRoutes");
+const competitionRoutes = require("./routes/competitionRoutes"); // ✅ جديد
 
 // الاتصال بقاعدة البيانات
 connectDB();
@@ -19,6 +20,7 @@ app.use(express.json());
 
 // API Routes
 app.use("/api/students", studentRoutes);
+app.use("/api/competitions", competitionRoutes); // ✅ جديد
 
 // ✅ خدمة ملفات الواجهة من مجلد frontend
 app.use(express.static(path.join(__dirname, "frontend")));
