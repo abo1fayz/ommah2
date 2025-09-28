@@ -9,9 +9,6 @@
             --primary-color: #2c786c;
             --secondary-color: #004445;
             --accent-color: #f8b400;
-            --gold: #ffd700;
-            --silver: #c0c0c0;
-            --bronze: #cd7f32;
             --text-color: #333;
             --light-bg: #faf5e4;
         }
@@ -103,6 +100,7 @@
             font-weight: bold;
             color: var(--secondary-color);
             margin: 0;
+            flex: 1;
         }
 
         .competition-type {
@@ -112,19 +110,20 @@
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 500;
+            white-space: nowrap;
         }
 
         .competition-details {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 15px;
         }
 
         .detail-item {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            align-items: flex-start;
+            gap: 10px;
             color: #666;
             font-size: 0.9rem;
         }
@@ -132,6 +131,18 @@
         .detail-item i {
             color: var(--primary-color);
             width: 16px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .detail-content {
+            flex: 1;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 2px;
         }
 
         .winners-section {
@@ -144,6 +155,9 @@
             margin-bottom: 15px;
             padding-bottom: 8px;
             border-bottom: 2px solid rgba(44, 120, 108, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .winner-card {
@@ -151,10 +165,8 @@
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
             transition: all 0.3s ease;
+            border-right: 4px solid var(--primary-color);
         }
 
         .winner-card:hover {
@@ -162,52 +174,50 @@
             transform: translateX(-5px);
         }
 
-        .winner-position {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+        .winner-header {
             display: flex;
+            justify-content: between;
             align-items: center;
-            justify-content: center;
-            font-weight: bold;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .winner-position {
+            background: var(--accent-color);
             color: white;
-            font-size: 1.1rem;
-        }
-
-        .position-1 {
-            background: linear-gradient(135deg, var(--gold), #ffed4e);
-            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
-        }
-
-        .position-2 {
-            background: linear-gradient(135deg, var(--silver), #e8e8e8);
-            box-shadow: 0 3px 10px rgba(192, 192, 192, 0.3);
-        }
-
-        .position-3 {
-            background: linear-gradient(135deg, var(--bronze), #e6a756);
-            box-shadow: 0 3px 10px rgba(205, 127, 50, 0.3);
-        }
-
-        .position-other {
-            background: var(--primary-color);
-        }
-
-        .winner-info {
-            flex: 1;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
         }
 
         .winner-name {
             font-weight: bold;
             color: var(--secondary-color);
-            margin-bottom: 5px;
+            font-size: 1.1rem;
+            flex: 1;
         }
 
         .winner-details {
-            display: flex;
-            gap: 15px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
             font-size: 0.85rem;
             color: #666;
+        }
+
+        .winner-detail {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .winner-code {
+            background: rgba(44, 120, 108, 0.1);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
         }
 
         .winner-prize {
@@ -215,9 +225,14 @@
             font-weight: 500;
         }
 
+        .winner-score {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
         .no-winners {
             text-align: center;
-            padding: 20px;
+            padding: 30px 20px;
             color: #888;
             background: #f8f9fa;
             border-radius: 8px;
@@ -229,7 +244,6 @@
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 500;
-            margin-right: 10px;
         }
 
         .status-upcoming {
@@ -305,6 +319,23 @@
             margin-bottom: 15px;
         }
 
+        .competition-notes {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-right: 4px solid #ffd54f;
+        }
+
+        .notes-title {
+            font-weight: bold;
+            color: #f57c00;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         @media (min-width: 768px) {
             .header {
                 padding: 25px 20px;
@@ -315,7 +346,7 @@
             }
             
             .container {
-                max-width: 800px;
+                max-width: 900px;
                 margin: 30px auto;
                 padding: 0 20px;
             }
@@ -329,6 +360,10 @@
             }
             
             .winner-details {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .winner-detail {
                 flex-direction: row;
             }
         }
@@ -351,9 +386,6 @@
             <button class="filter-btn" data-filter="قادمة">المسابقات القادمة</button>
             <button class="filter-btn" data-filter="جارية">المسابقات الجارية</button>
             <button class="filter-btn" data-filter="منتهية">المسابقات المنتهية</button>
-            <button class="filter-btn" data-filter="تلاوة">مسابقات التلاوة</button>
-            <button class="filter-btn" data-filter="حفظ">مسابقات الحفظ</button>
-            <button class="filter-btn" data-filter="تجويد">مسابقات التجويد</button>
         </div>
 
         <div id="competitionsList">
@@ -417,43 +449,78 @@
             }
             
             competitionsList.innerHTML = competitions.map(competition => `
-                <div class="competition-card" data-status="${competition.status}" data-type="${competition.type}">
+                <div class="competition-card" data-status="${competition.status}">
                     <div class="competition-header">
-                        <h3 class="competition-title">${competition.title}</h3>
+                        <h2 class="competition-title">${competition.title}</h2>
                         <div>
                             <span class="competition-type">${competition.type}</span>
-                            <span class="status-badge status-${competition.status}">${getStatusText(competition.status)}</span>
+                            <span class="status-badge status-${competition.status}">${competition.status}</span>
                         </div>
                     </div>
                     
                     <div class="competition-details">
                         <div class="detail-item">
                             <i class="far fa-calendar"></i>
-                            <span>${formatDate(competition.date)}</span>
+                            <div class="detail-content">
+                                <div class="detail-label">التاريخ:</div>
+                                <div>${formatDate(competition.date)} ${competition.endDate ? ` - ${formatDate(competition.endDate)}` : ''}</div>
+                            </div>
                         </div>
+                        
                         <div class="detail-item">
                             <i class="far fa-map-marker-alt"></i>
-                            <span>${competition.location || 'لم يتم تحديد المكان'}</span>
+                            <div class="detail-content">
+                                <div class="detail-label">المكان:</div>
+                                <div>${competition.location || 'لم يتم تحديد المكان'}</div>
+                            </div>
                         </div>
+                        
                         ${competition.criteria ? `
                         <div class="detail-item">
                             <i class="far fa-clipboard-list"></i>
-                            <span>${competition.criteria}</span>
+                            <div class="detail-content">
+                                <div class="detail-label">معايير التقييم:</div>
+                                <div>${competition.criteria}</div>
+                            </div>
                         </div>
                         ` : ''}
-                        ${competition.description ? `
+                        
+                        ${competition.participantsCount ? `
                         <div class="detail-item">
-                            <i class="far fa-file-alt"></i>
-                            <span>${competition.description}</span>
+                            <i class="far fa-users"></i>
+                            <div class="detail-content">
+                                <div class="detail-label">عدد المشاركين:</div>
+                                <div>${competition.participantsCount} مشارك</div>
+                            </div>
                         </div>
                         ` : ''}
                     </div>
                     
+                    ${competition.description ? `
+                    <div class="detail-item">
+                        <i class="far fa-file-alt"></i>
+                        <div class="detail-content">
+                            <div class="detail-label">وصف المسابقة:</div>
+                            <div>${competition.description}</div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${competition.notes ? `
+                    <div class="competition-notes">
+                        <div class="notes-title">
+                            <i class="far fa-sticky-note"></i>
+                            ملاحظات:
+                        </div>
+                        <div>${competition.notes}</div>
+                    </div>
+                    ` : ''}
+                    
                     <div class="winners-section">
-                        <h4 class="winners-title">
+                        <h3 class="winners-title">
                             <i class="far fa-trophy"></i>
                             الفائزون
-                        </h4>
+                        </h3>
                         ${renderWinners(competition.winners)}
                     </div>
                 </div>
@@ -466,21 +533,24 @@
                 return '<div class="no-winners">لا توجد نتائج للفائزين بعد</div>';
             }
             
-            // ترتيب الفائزين حسب المركز
-            const sortedWinners = [...winners].sort((a, b) => a.position - b.position);
-            
-            return sortedWinners.map(winner => `
+            return winners.map(winner => `
                 <div class="winner-card">
-                    <div class="winner-position position-${winner.position}">
-                        ${winner.position}
-                    </div>
-                    <div class="winner-info">
+                    <div class="winner-header">
+                        <div class="winner-position">${winner.position}</div>
                         <div class="winner-name">${winner.studentName}</div>
-                        <div class="winner-details">
-                            <span class="winner-code">الكود: ${winner.studentCode}</span>
-                            ${winner.prize ? `<span class="winner-prize">الجائزة: ${winner.prize}</span>` : ''}
-                            ${winner.notes ? `<span class="winner-notes">${winner.notes}</span>` : ''}
+                    </div>
+                    <div class="winner-details">
+                        <div class="winner-detail">
+                            ${winner.studentCode ? `<span class="winner-code">الكود: ${winner.studentCode}</span>` : ''}
+                            ${winner.prize ? `<span class="winner-prize">${winner.prize}</span>` : ''}
+                            ${winner.score ? `<span class="winner-score">النتيجة: ${winner.score}</span>` : ''}
                         </div>
+                        ${winner.notes ? `
+                        <div class="detail-item">
+                            <i class="far fa-comment"></i>
+                            <div class="detail-content">${winner.notes}</div>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
             `).join('');
@@ -491,11 +561,7 @@
             let filteredCompetitions = competitionsData;
             
             if (filter !== 'all') {
-                if (['قادمة', 'جارية', 'منتهية'].includes(filter)) {
-                    filteredCompetitions = competitionsData.filter(c => c.status === filter);
-                } else {
-                    filteredCompetitions = competitionsData.filter(c => c.type === filter);
-                }
+                filteredCompetitions = competitionsData.filter(c => c.status === filter);
             }
             
             renderCompetitions(filteredCompetitions);
@@ -509,16 +575,6 @@
                 month: 'long',
                 day: 'numeric'
             });
-        }
-
-        // نص حالة المسابقة
-        function getStatusText(status) {
-            const statusMap = {
-                'قادمة': 'قادمة',
-                'جارية': 'جارية',
-                'منتهية': 'منتهية'
-            };
-            return statusMap[status] || status;
         }
 
         // عرض خطأ
