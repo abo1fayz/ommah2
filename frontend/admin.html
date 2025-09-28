@@ -1164,4 +1164,293 @@
             }
             
             try {
-                const response = await fetch(`${API_URL
+                const response = await fetch(`${API_URL}/${currentEditStudentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        code: code,
+                        overallLevel: level,
+                        image: image
+                    })
+                });
+                
+                if (response.ok) {
+                    closeEditStudentModal();
+                    fetchStudents(); // إعادة جلب البيانات من الخادم
+                    showMessage('studentMessage', 'تم تحديث بيانات الطالب بنجاح', 'success');
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'فشل في تحديث بيانات الطالب');
+                }
+            } catch (error) {
+                console.error('Error updating student:', error);
+                showMessage('studentMessage', `حدث خطأ أثناء تحديث بيانات الطالب: ${error.message}`, 'error');
+            }
+        }
+
+        // ✅ جديد: حفظ الفائز
+        async function saveWinner() {
+            if (!currentCompetitionId) {
+                showMessage('competitionMessage', 'لم يتم تحديد مسابقة', 'error');
+                return;
+            }
+            
+            const studentCode = document.getElementById('winnerStudentCode').value.trim();
+            const position = parseInt(document.getElementById('winnerPosition').value);
+            const prize = document.getElementById('winnerPrize').value.trim();
+            const notes = document.getElementById('winnerNotes').value.trim();
+            
+            if (!studentCode) {
+                showMessage('competitionMessage', 'الرجاء إدخال كود الطالب', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${COMPETITIONS_API_URL}/${currentCompetitionId}/winners`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        studentCode,
+                        position,
+                        prize,
+                        notes
+                    })
+                });
+                
+                if (response.ok) {
+                    closeAddWinnerModal();
+                    fetchCompetitions(); // إعادة جلب البيانات من الخادم
+                    showMessage('competitionMessage', 'تم إضافة الفائز بنجاح', 'success');
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'فشل في إضافة الفائز');
+                }
+            } catch (error) {
+                console.error('Error adding winner:', error);
+                showMessage('competitionMessage', `حدث خطأ أثناء إضافة الفائز: ${error.message}`, 'error');
+            }
+        }
+
+        // حذف طالب
+        async function deleteStudent(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا الطالب؟ سيتم حذف جميع اختباراته أيضاً.')) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+                
+                if (response.ok) {
+                    showMessage('studentMessage', 'تم حذف الطالب بنجاح', 'success');
+                    fetchStudents();
+                } else {
+                    throw new Error('فشل في حذف الطالب');
+                }
+            } catch (error) {
+                console.error('Error deleting student:', error);
+                showMessage('studentMessage', 'حدث خطأ أثناء حذف الطالب', 'error');
+            }
+        }
+
+        // ✅ جديد: حذف مسابقة
+        async function deleteCompetition(id) {
+            if (!confirm('هل أنت متأكد من حذف هذه المسابقة؟ سيتم حذف جميع الفائزين أيضاً.')) return;
+            
+            try {
+                const response = await fetch(`${COMPETITIONS_API_URL}/${id}`, { method: "DELETE" });
+                
+                if (response.ok) {
+                    showMessage('competitionMessage', 'تم حذف المسابقة بنجاح', 'success');
+                    fetchCompetitions();
+                } else {
+                    throw new Error('فشل في حذف المسابقة');
+                }
+            } catch (error) {
+                console.error('Error deleting competition:', error);
+                showMessage('competitionMessage', 'حدث خطأ أثناء حذف المسابقة', 'error');
+            }
+        }
+
+        // إضافة طالب جديد
+        async function addStudent() {
+            const name = document.getElementById('newStudentName').value.trim();
+            const code = document.getElementById('newStudentCode').value.trim();
+            const level = document.getElementById('newStudentLevel').value;
+            const image = document.getElementById('newStudentImage').value.trim();
+            
+            if (!name || !code) {
+                showMessage('studentMessage', 'الرجاء إدخال اسم الطالب وكود الدخول', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, code, overallLevel: level, image })
+                });
+                
+                if (response.ok) {
+                    // مسح الحقول
+                    document.getElementById('newStudentName').value = '';
+                    document.getElementById('newStudentCode').value = '';
+                    document.getElementById('newStudentImage').value = '';
+                    
+                    showMessage('studentMessage', 'تم إضافة الطالب بنجاح', 'success');
+                    fetchStudents();
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'فشل في إضافة الطالب');
+                }
+            } catch (error) {
+                console.error('Error adding student:', error);
+                showMessage('studentMessage', `حدث خطأ أثناء إضافة الطالب: ${error.message}`, 'error');
+            }
+        }
+
+        // ✅ جديد: إضافة مسابقة جديدة
+        async function addCompetition() {
+            const title = document.getElementById('competitionTitle').value.trim();
+            const description = document.getElementById('competitionDescription').value.trim();
+            const type = document.getElementById('competitionType').value;
+            const status = document.getElementById('competitionStatus').value;
+            const date = document.getElementById('competitionDate').value;
+            const location = document.getElementById('competitionLocation').value.trim();
+            const criteria = document.getElementById('competitionCriteria').value.trim();
+            const image = document.getElementById('competitionImage').value.trim();
+            
+            if (!title || !date) {
+                showMessage('competitionMessage', 'الرجاء إدخال عنوان المسابقة وتاريخها', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(COMPETITIONS_API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        title, 
+                        description, 
+                        type, 
+                        status, 
+                        date, 
+                        location, 
+                        criteria, 
+                        image 
+                    })
+                });
+                
+                if (response.ok) {
+                    // مسح الحقول
+                    document.getElementById('competitionTitle').value = '';
+                    document.getElementById('competitionDescription').value = '';
+                    document.getElementById('competitionDate').value = '';
+                    document.getElementById('competitionLocation').value = '';
+                    document.getElementById('competitionCriteria').value = '';
+                    document.getElementById('competitionImage').value = '';
+                    
+                    showMessage('competitionMessage', 'تم إضافة المسابقة بنجاح', 'success');
+                    fetchCompetitions();
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'فشل في إضافة المسابقة');
+                }
+            } catch (error) {
+                console.error('Error adding competition:', error);
+                showMessage('competitionMessage', `حدث خطأ أثناء إضافة المسابقة: ${error.message}`, 'error');
+            }
+        }
+
+        // إضافة اختبار جديد
+        async function addTest() {
+            const studentId = document.getElementById('testStudent').value;
+            const testType = document.getElementById('testType').value;
+            const testName = document.getElementById('testName').value.trim();
+            const testResult = document.getElementById('testResult').value;
+            const testDate = document.getElementById('testDate').value;
+            
+            if (!studentId || !testName || !testResult || !testDate) {
+                showMessage('testMessage', 'الرجاء تعبئة جميع حقول الاختبار', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/${studentId}/tests`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ testType, testName, result: testResult, date: testDate })
+                });
+                
+                if (response.ok) {
+                    // مسح الحقول
+                    document.getElementById('testName').value = '';
+                    document.getElementById('testResult').value = '';
+                    document.getElementById('testDate').value = '';
+                    
+                    showMessage('testMessage', 'تم إضافة الاختبار بنجاح', 'success');
+                    fetchStudents();
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'فشل في إضافة الاختبار');
+                }
+            } catch (error) {
+                console.error('Error adding test:', error);
+                showMessage('testMessage', `حدث خطأ أثناء إضافة الاختبار: ${error.message}`, 'error');
+            }
+        }
+
+        // إضافة صفحات شهرية
+        async function addMonthlyPages() {
+            const studentId = document.getElementById('pagesStudent').value;
+            const month = parseInt(document.getElementById('pagesMonth').value);
+            const year = parseInt(document.getElementById('pagesYear').value);
+            const pages = parseInt(document.getElementById('pagesCount').value);
+            const goal = parseInt(document.getElementById('pagesGoal').value);
+            
+            if (!studentId || !month || !year || !pages) {
+                showMessage('pagesMessage', 'الرجاء تعبئة جميع الحقول المطلوبة', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/${studentId}/monthly-pages`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ month, year, pages, goal })
+                });
+                
+                if (response.ok) {
+                    // مسح الحقول
+                    document.getElementById('pagesCount').value = '';
+                    
+                    showMessage('pagesMessage', 'تم حفظ بيانات الصفحات بنجاح', 'success');
+                    fetchStudents();
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'فشل في حفظ بيانات الصفحات');
+                }
+            } catch (error) {
+                console.error('Error adding monthly pages:', error);
+                showMessage('pagesMessage', `حدث خطأ أثناء حفظ الصفحات الشهرية: ${error.message}`, 'error');
+            }
+        }
+
+        // عرض الرسائل
+        function showMessage(elementId, text, type) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            element.textContent = text;
+            element.className = 'message ' + type;
+            element.style.display = 'block';
+            
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
