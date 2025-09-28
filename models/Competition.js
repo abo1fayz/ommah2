@@ -1,14 +1,14 @@
-
 // models/Competition.js
 const mongoose = require("mongoose");
 
 const winnerSchema = new mongoose.Schema({
-  studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true },
+  studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student' },
   studentName: { type: String, required: true },
-  studentCode: { type: String, required: true },
-  position: { type: Number, required: true }, // 1, 2, 3
-  prize: { type: String }, // الجائزة
-  notes: { type: String } // ملاحظات إضافية
+  studentCode: { type: String },
+  position: { type: String, required: true }, // ✅ أصبح نصياً
+  prize: { type: String },
+  notes: { type: String },
+  score: { type: String } // نتيجة أو درجة الفائز
 });
 
 const competitionSchema = new mongoose.Schema({
@@ -16,19 +16,21 @@ const competitionSchema = new mongoose.Schema({
   description: { type: String },
   type: { 
     type: String, 
-    required: true,
-    enum: ['تلاوة', 'حفظ', 'تجويد', 'أنشطة', 'أخرى']
+    required: true
+    // ✅ تم إزالة enum لجعل النوع مفتوحاً
   },
   date: { type: Date, required: true },
+  endDate: { type: Date }, // تاريخ انتهاء المسابقة
   location: { type: String },
   status: {
     type: String,
-    enum: ['قادمة', 'جارية', 'منتهية'],
-    default: 'قادمة'
+    // ✅ تم إزالة enum لجعل الحالة مفتوحة
   },
-  image: { type: String }, // صورة المسابقة
+  image: { type: String },
   winners: [winnerSchema],
-  criteria: { type: String } // معايير التقييم
+  criteria: { type: String }, // معايير التقييم
+  participantsCount: { type: Number }, // عدد المشاركين
+  notes: { type: String } // ملاحظات عامة
 }, {
   timestamps: true
 });
