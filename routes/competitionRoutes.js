@@ -67,31 +67,67 @@ router.delete("/:id", async (req, res) => {
 
 /* إضافة فائز لمسابقة */
 router.post("/:id/winners", async (req, res) => {
-  const { studentCode, position, prize, notes } = req.body;
+  const { studentCode, position, prize, notes, score, studentName } = req.body;
   
   try {
     const competition = await Competition.findById(req.params.id);
     if (!competition) return res.status(404).json({ message: "المسابقة غير موجودة" });
 
-    // البحث عن الطالب باستخدام الكود
-    const student = await Student.findOne({ code: studentCode });
-    if (!student) return res.status(404).json({ message: "الطالب غير موجود" });
+    let studentId = null;
+    let finalStudentName = studentName;
 
-    // التحقق من عدم تكرار المركز
-    const existingWinner = competition.winners.find(w => w.position === position);
-    if (existingWinner) {
-      return res.status(400).json({ message: `المركز ${position} محجوز مسبقاً` });
+    // إذا تم تقديم كود الطالب، البحث عنه
+    if (studentCode) {
+      const student = await Student.findOne({ code: studentCode });
+      if (student) {
+        studentId = student._id;
+        finalStudentName = student.name; // استخدام اسم الطالب من قاعدة البيانات
+      }
+    }
+
+    // إذا لم يتم تقديم اسم الطالب
+    if (!finalStudentName) {
+      return res.status(400).json({ message: "الرجاء إدخال اسم الطالب" });
     }
 
     // إضافة الفائز
     competition.winners.push({
-      studentId: student._id,
-      studentName: student.name,
-      studentCode: student.code,
+      studentId,
+      studentName: finalStudentName,
+      studentCode: studentCode || 'غير محدد',
       position,
       prize,
-      notes
+      notes,
+      score
     });
+
+    await competition.save();
+    res.json(competition);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+/* تعديل فائز */
+router.put("/:id/winners/:winnerId", async (req, res) => {
+  try {
+    const competition = await Competition.findById(req.params.id);
+    if (!competition) return res.status(404).json({ message: "المسابقة غير موجودة" });
+
+    const winner = competition.winners.id(req.params.winnerId);
+    if (!winner) return res.status(404).json({ message: "الفائز غير موجود" });
+
+    // تحديث بيانات الفائز
+    Object.assign(winner, req.body);
+
+    // إذا تم تغيير كود الطالب، تحديث بياناته
+    if (req.body.studentCode) {
+      const student = await Student.findOne({ code: req.body.studentCode });
+      if (student) {
+        winner.studentId = student._id;
+        winner.studentName = student.name;
+      }
+    }
 
     await competition.save();
     res.json(competition);
