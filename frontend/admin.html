@@ -390,26 +390,107 @@
         .winner-position {
             background: var(--accent-color);
             color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 4px 12px;
+            border-radius: 20px;
             font-weight: bold;
+            font-size: 0.9rem;
         }
 
         .winner-details {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            grid-template-columns: 1fr;
+            gap: 8px;
             font-size: 0.9rem;
+        }
+
+        .winner-detail-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .winner-code {
+            background: rgba(44, 120, 108, 0.1);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .winner-prize {
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        .winner-score {
+            color: var(--primary-color);
+            font-weight: 500;
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
+        }
+
+        .competition-details {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .competition-detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .competition-detail-item i {
+            color: var(--primary-color);
+            width: 16px;
+            margin-top: 2px;
+        }
+
+        .competition-notes {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-right: 4px solid #ffd54f;
+        }
+
+        .notes-title {
+            font-weight: bold;
+            color: #f57c00;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+
+        .status-upcoming {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-ongoing {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-finished {
+            background: #e8f5e8;
+            color: #2e7d32;
         }
 
         @media (min-width: 768px) {
@@ -446,6 +527,14 @@
                 font-size: 1.4rem;
                 padding-bottom: 12px;
             }
+            
+            .competition-details {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .winner-details {
+                grid-template-columns: 1fr 1fr;
+            }
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -463,8 +552,8 @@
                 <div class="tab" data-tab="add-student">إضافة طالب جديد</div>
                 <div class="tab" data-tab="add-test">إضافة اختبار</div>
                 <div class="tab" data-tab="monthly-pages">إدارة الصفحات الشهرية</div>
-                <div class="tab" data-tab="competitions">إدارة المسابقات</div> <!-- ✅ جديد -->
-                <div class="tab" data-tab="add-competition">إضافة مسابقة</div> <!-- ✅ جديد -->
+                <div class="tab" data-tab="competitions">إدارة المسابقات</div>
+                <div class="tab" data-tab="add-competition">إضافة مسابقة</div>
             </div>
             
             <!-- إدارة الطلاب -->
@@ -600,7 +689,7 @@
                 <div id="pagesMessage" class="message"></div>
             </div>
 
-            <!-- ✅ جديد: إدارة المسابقات -->
+            <!-- إدارة المسابقات -->
             <div class="tab-content" id="competitions">
                 <h3 class="section-title">
                     <i class="fas fa-trophy"></i>
@@ -609,7 +698,7 @@
                 <div class="competition-list" id="competitionsList"></div>
             </div>
 
-            <!-- ✅ جديد: إضافة مسابقة -->
+            <!-- إضافة مسابقة -->
             <div class="tab-content" id="add-competition">
                 <h3 class="section-title">
                     <i class="fas fa-plus-circle"></i>
@@ -617,57 +706,62 @@
                 </h3>
                 
                 <div class="form-group">
-                    <label for="competitionTitle">عنوان المسابقة</label>
-                    <input type="text" id="competitionTitle" required>
+                    <label for="competitionTitle">عنوان المسابقة *</label>
+                    <input type="text" id="competitionTitle" required placeholder="أدخل عنوان المسابقة">
                 </div>
                 
                 <div class="form-group">
                     <label for="competitionDescription">وصف المسابقة</label>
-                    <textarea id="competitionDescription" rows="3"></textarea>
+                    <textarea id="competitionDescription" rows="3" placeholder="وصف مختصر عن المسابقة"></textarea>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="competitionType">نوع المسابقة</label>
-                        <select id="competitionType" required>
-                            <option value="تلاوة">تلاوة</option>
-                            <option value="حفظ">حفظ</option>
-                            <option value="تجويد">تجويد</option>
-                            <option value="أنشطة">أنشطة</option>
-                            <option value="أخرى">أخرى</option>
-                        </select>
+                        <label for="competitionType">نوع المسابقة *</label>
+                        <input type="text" id="competitionType" required placeholder="مثال: تلاوة, حفظ, تجويد, أنشطة...">
                     </div>
                     
                     <div class="form-group">
-                        <label for="competitionStatus">حالة المسابقة</label>
-                        <select id="competitionStatus" required>
-                            <option value="قادمة">قادمة</option>
-                            <option value="جارية">جارية</option>
-                            <option value="منتهية">منتهية</option>
-                        </select>
+                        <label for="competitionStatus">حالة المسابقة *</label>
+                        <input type="text" id="competitionStatus" required placeholder="مثال: قادمة, جارية, منتهية">
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="competitionDate">تاريخ المسابقة</label>
+                        <label for="competitionDate">تاريخ البدء *</label>
                         <input type="date" id="competitionDate" required>
                     </div>
                     
                     <div class="form-group">
-                        <label for="competitionLocation">مكان المسابقة</label>
-                        <input type="text" id="competitionLocation">
+                        <label for="competitionEndDate">تاريخ الانتهاء</label>
+                        <input type="date" id="competitionEndDate">
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="competitionCriteria">معايير التقييم</label>
-                    <input type="text" id="competitionCriteria" placeholder="مثال: النطق الصحيح, الحفظ المتقن...">
+                    <label for="competitionLocation">مكان المسابقة</label>
+                    <input type="text" id="competitionLocation" placeholder="مكان إقامة المسابقة">
                 </div>
                 
                 <div class="form-group">
-                    <label for="competitionImage">رابط صورة المسابقة (اختياري)</label>
-                    <input type="text" id="competitionImage">
+                    <label for="competitionCriteria">معايير التقييم</label>
+                    <input type="text" id="competitionCriteria" placeholder="معايير تقييم المشاركين">
+                </div>
+                
+                <div class="form-group">
+                    <label for="competitionParticipants">عدد المشاركين</label>
+                    <input type="number" id="competitionParticipants" placeholder="عدد المشاركين في المسابقة">
+                </div>
+                
+                <div class="form-group">
+                    <label for="competitionImage">رابط صورة المسابقة</label>
+                    <input type="text" id="competitionImage" placeholder="رابط صورة للمسابقة (اختياري)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="competitionNotes">ملاحظات عامة</label>
+                    <textarea id="competitionNotes" rows="2" placeholder="ملاحظات إضافية عن المسابقة"></textarea>
                 </div>
                 
                 <button id="saveCompetitionBtn" class="btn-primary">حفظ المسابقة</button>
@@ -715,7 +809,7 @@
         </div>
     </div>
 
-    <!-- ✅ جديد: نافذة إضافة فائز -->
+    <!-- نافذة إضافة فائز -->
     <div class="modal" id="addWinnerModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -724,23 +818,31 @@
             </div>
             
             <div class="form-group">
-                <label for="winnerStudentCode">كود الطالب الفائز</label>
-                <input type="text" id="winnerStudentCode" required placeholder="أدخل كود الطالب المكون من 6 أرقام">
+                <label for="winnerStudentName">اسم الطالب الفائز *</label>
+                <input type="text" id="winnerStudentName" required placeholder="أدخل اسم الطالب الفائز">
+            </div>
+            
+            <div class="form-group">
+                <label for="winnerStudentCode">كود الطالب (اختياري)</label>
+                <input type="text" id="winnerStudentCode" placeholder="أدخل كود الطالب إذا كان مسجلاً">
             </div>
             
             <div class="form-row">
                 <div class="form-group">
-                    <label for="winnerPosition">المركز</label>
-                    <select id="winnerPosition" required>
-                        <option value="1">المركز الأول</option>
-                        <option value="2">المركز الثاني</option>
-                        <option value="3">المركز الثالث</option>
-                    </select>
+                    <label for="winnerPosition">المركز/الوصف *</label>
+                    <input type="text" id="winnerPosition" required placeholder="مثال: المركز الأول, أفضل تلاوة, مميز...">
                 </div>
                 
                 <div class="form-group">
                     <label for="winnerPrize">الجائزة</label>
-                    <input type="text" id="winnerPrize" placeholder="اختياري">
+                    <input type="text" id="winnerPrize" placeholder="الجائزة التي حصل عليها">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="winnerScore">النتيجة/الدرجة</label>
+                    <input type="text" id="winnerScore" placeholder="مثال: 95%, ممتاز...">
                 </div>
             </div>
             
@@ -758,17 +860,17 @@
 
     <script>
         const API_URL = "https://ommah2.onrender.com/api/students";
-        const COMPETITIONS_API_URL = "https://ommah2.onrender.com/api/competitions"; // ✅ جديد
+        const COMPETITIONS_API_URL = "https://ommah2.onrender.com/api/competitions";
         let currentEditStudentId = null;
-        let currentCompetitionId = null; // ✅ جديد
+        let currentCompetitionId = null;
         let studentsData = [];
-        let competitionsData = []; // ✅ جديد
+        let competitionsData = [];
 
         // تهيئة التطبيق
         document.addEventListener('DOMContentLoaded', function() {
             setupEventListeners();
             fetchStudents();
-            fetchCompetitions(); // ✅ جديد
+            fetchCompetitions();
         });
 
         // إعداد مستمعي الأحداث
@@ -797,7 +899,7 @@
             // حفظ صفحات شهرية
             document.getElementById('savePagesBtn').addEventListener('click', addMonthlyPages);
             
-            // ✅ جديد: حفظ مسابقة جديدة
+            // حفظ مسابقة جديدة
             document.getElementById('saveCompetitionBtn').addEventListener('click', addCompetition);
             
             // أحداث نافذة تعديل الطالب
@@ -805,7 +907,7 @@
             document.getElementById('cancelEditStudentBtn').addEventListener('click', closeEditStudentModal);
             document.getElementById('saveEditStudentBtn').addEventListener('click', saveStudentEdit);
             
-            // ✅ جديد: أحداث نافذة إضافة فائز
+            // أحداث نافذة إضافة فائز
             document.getElementById('closeAddWinnerModal').addEventListener('click', closeAddWinnerModal);
             document.getElementById('cancelAddWinnerBtn').addEventListener('click', closeAddWinnerModal);
             document.getElementById('saveWinnerBtn').addEventListener('click', saveWinner);
@@ -837,7 +939,7 @@
             }
         }
 
-        // ✅ جديد: جلب بيانات المسابقات
+        // جلب بيانات المسابقات
         async function fetchCompetitions() {
             try {
                 const res = await fetch(COMPETITIONS_API_URL);
@@ -922,7 +1024,7 @@
             });
         }
 
-        // ✅ جديد: عرض قائمة المسابقات
+        // عرض قائمة المسابقات
         function renderCompetitions(competitions) {
             const competitionsList = document.getElementById('competitionsList');
             competitionsList.innerHTML = '';
@@ -944,15 +1046,56 @@
                 competitionCard.innerHTML = `
                     <div class="competition-header">
                         <div class="competition-title">${competition.title}</div>
-                        <div class="competition-type">${competition.type}</div>
+                        <div>
+                            <span class="competition-type">${competition.type}</span>
+                            <span class="status-badge status-${competition.status}">${competition.status}</span>
+                        </div>
                     </div>
                     
                     <div class="competition-details">
-                        <div><strong>التاريخ:</strong> ${formatDate(competition.date)}</div>
-                        <div><strong>المكان:</strong> ${competition.location || 'غير محدد'}</div>
-                        <div><strong>الحالة:</strong> ${getStatusText(competition.status)}</div>
-                        ${competition.criteria ? `<div><strong>المعايير:</strong> ${competition.criteria}</div>` : ''}
+                        <div class="competition-detail-item">
+                            <i class="far fa-calendar"></i>
+                            <div>${formatDate(competition.date)} ${competition.endDate ? ` - ${formatDate(competition.endDate)}` : ''}</div>
+                        </div>
+                        
+                        ${competition.location ? `
+                        <div class="competition-detail-item">
+                            <i class="far fa-map-marker-alt"></i>
+                            <div>${competition.location}</div>
+                        </div>
+                        ` : ''}
+                        
+                        ${competition.criteria ? `
+                        <div class="competition-detail-item">
+                            <i class="far fa-clipboard-list"></i>
+                            <div>${competition.criteria}</div>
+                        </div>
+                        ` : ''}
+                        
+                        ${competition.participantsCount ? `
+                        <div class="competition-detail-item">
+                            <i class="far fa-users"></i>
+                            <div>${competition.participantsCount} مشارك</div>
+                        </div>
+                        ` : ''}
                     </div>
+                    
+                    ${competition.description ? `
+                    <div class="competition-detail-item">
+                        <i class="far fa-file-alt"></i>
+                        <div>${competition.description}</div>
+                    </div>
+                    ` : ''}
+                    
+                    ${competition.notes ? `
+                    <div class="competition-notes">
+                        <div class="notes-title">
+                            <i class="far fa-sticky-note"></i>
+                            ملاحظات:
+                        </div>
+                        <div>${competition.notes}</div>
+                    </div>
+                    ` : ''}
                     
                     <div class="winners-section">
                         <h4>الفائزون</h4>
@@ -984,24 +1127,30 @@
             });
         }
 
-        // ✅ جديد: عرض فائزي المسابقة
+        // عرض فائزي المسابقة
         function renderCompetitionWinners(winners) {
             if (!winners || winners.length === 0) {
                 return '<div class="no-data">لا توجد نتائج للفائزين بعد</div>';
             }
             
-            const sortedWinners = [...winners].sort((a, b) => a.position - b.position);
-            
-            return sortedWinners.map(winner => `
+            return winners.map(winner => `
                 <div class="winner-item">
                     <div class="winner-header">
                         <div class="winner-position">${winner.position}</div>
                         <div class="winner-name">${winner.studentName}</div>
                     </div>
                     <div class="winner-details">
-                        <div><strong>الكود:</strong> ${winner.studentCode}</div>
-                        ${winner.prize ? `<div><strong>الجائزة:</strong> ${winner.prize}</div>` : ''}
-                        ${winner.notes ? `<div><strong>ملاحظات:</strong> ${winner.notes}</div>` : ''}
+                        <div class="winner-detail-row">
+                            ${winner.studentCode ? `<span class="winner-code">الكود: ${winner.studentCode}</span>` : ''}
+                            ${winner.prize ? `<span class="winner-prize">${winner.prize}</span>` : ''}
+                            ${winner.score ? `<span class="winner-score">النتيجة: ${winner.score}</span>` : ''}
+                        </div>
+                        ${winner.notes ? `
+                        <div class="competition-detail-item">
+                            <i class="far fa-comment"></i>
+                            <div>${winner.notes}</div>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
             `).join('');
@@ -1095,16 +1244,6 @@
             return date.toLocaleDateString('ar-EG');
         }
 
-        // ✅ جديد: نص حالة المسابقة
-        function getStatusText(status) {
-            const statusMap = {
-                'قادمة': 'قادمة',
-                'جارية': 'جارية',
-                'منتهية': 'منتهية'
-            };
-            return statusMap[status] || status;
-        }
-
         // فتح نافذة تعديل الطالب
         function openEditStudentModal(id) {
             // البحث عن الطالب في البيانات المخزنة محلياً
@@ -1124,12 +1263,14 @@
             }
         }
 
-        // ✅ جديد: فتح نافذة إضافة فائز
+        // فتح نافذة إضافة فائز
         function openAddWinnerModal(id) {
             currentCompetitionId = id;
+            document.getElementById('winnerStudentName').value = '';
             document.getElementById('winnerStudentCode').value = '';
-            document.getElementById('winnerPosition').value = '1';
+            document.getElementById('winnerPosition').value = '';
             document.getElementById('winnerPrize').value = '';
+            document.getElementById('winnerScore').value = '';
             document.getElementById('winnerNotes').value = '';
             document.getElementById('addWinnerModal').style.display = 'flex';
         }
@@ -1140,7 +1281,7 @@
             currentEditStudentId = null;
         }
 
-        // ✅ جديد: إغلاق نافذة إضافة فائز
+        // إغلاق نافذة إضافة فائز
         function closeAddWinnerModal() {
             document.getElementById('addWinnerModal').style.display = 'none';
             currentCompetitionId = null;
@@ -1191,20 +1332,22 @@
             }
         }
 
-        // ✅ جديد: حفظ الفائز
+        // حفظ الفائز
         async function saveWinner() {
             if (!currentCompetitionId) {
                 showMessage('competitionMessage', 'لم يتم تحديد مسابقة', 'error');
                 return;
             }
             
+            const studentName = document.getElementById('winnerStudentName').value.trim();
             const studentCode = document.getElementById('winnerStudentCode').value.trim();
-            const position = parseInt(document.getElementById('winnerPosition').value);
+            const position = document.getElementById('winnerPosition').value.trim();
             const prize = document.getElementById('winnerPrize').value.trim();
+            const score = document.getElementById('winnerScore').value.trim();
             const notes = document.getElementById('winnerNotes').value.trim();
             
-            if (!studentCode) {
-                showMessage('competitionMessage', 'الرجاء إدخال كود الطالب', 'error');
+            if (!studentName || !position) {
+                showMessage('competitionMessage', 'الرجاء إدخال اسم الطالب والمركز', 'error');
                 return;
             }
             
@@ -1215,9 +1358,11 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
+                        studentName,
                         studentCode,
                         position,
                         prize,
+                        score,
                         notes
                     })
                 });
@@ -1255,7 +1400,7 @@
             }
         }
 
-        // ✅ جديد: حذف مسابقة
+        // حذف مسابقة
         async function deleteCompetition(id) {
             if (!confirm('هل أنت متأكد من حذف هذه المسابقة؟ سيتم حذف جميع الفائزين أيضاً.')) return;
             
@@ -1311,19 +1456,22 @@
             }
         }
 
-        // ✅ جديد: إضافة مسابقة جديدة
+        // إضافة مسابقة جديدة
         async function addCompetition() {
             const title = document.getElementById('competitionTitle').value.trim();
             const description = document.getElementById('competitionDescription').value.trim();
-            const type = document.getElementById('competitionType').value;
-            const status = document.getElementById('competitionStatus').value;
+            const type = document.getElementById('competitionType').value.trim();
+            const status = document.getElementById('competitionStatus').value.trim();
             const date = document.getElementById('competitionDate').value;
+            const endDate = document.getElementById('competitionEndDate').value;
             const location = document.getElementById('competitionLocation').value.trim();
             const criteria = document.getElementById('competitionCriteria').value.trim();
+            const participantsCount = document.getElementById('competitionParticipants').value;
             const image = document.getElementById('competitionImage').value.trim();
+            const notes = document.getElementById('competitionNotes').value.trim();
             
-            if (!title || !date) {
-                showMessage('competitionMessage', 'الرجاء إدخال عنوان المسابقة وتاريخها', 'error');
+            if (!title || !type || !status || !date) {
+                showMessage('competitionMessage', 'الرجاء إدخال الحقول الإلزامية (العنوان، النوع، الحالة، التاريخ)', 'error');
                 return;
             }
             
@@ -1337,9 +1485,12 @@
                         type, 
                         status, 
                         date, 
+                        endDate: endDate || undefined,
                         location, 
                         criteria, 
-                        image 
+                        participantsCount: participantsCount ? parseInt(participantsCount) : undefined,
+                        image, 
+                        notes 
                     })
                 });
                 
@@ -1347,10 +1498,15 @@
                     // مسح الحقول
                     document.getElementById('competitionTitle').value = '';
                     document.getElementById('competitionDescription').value = '';
+                    document.getElementById('competitionType').value = '';
+                    document.getElementById('competitionStatus').value = '';
                     document.getElementById('competitionDate').value = '';
+                    document.getElementById('competitionEndDate').value = '';
                     document.getElementById('competitionLocation').value = '';
                     document.getElementById('competitionCriteria').value = '';
+                    document.getElementById('competitionParticipants').value = '';
                     document.getElementById('competitionImage').value = '';
+                    document.getElementById('competitionNotes').value = '';
                     
                     showMessage('competitionMessage', 'تم إضافة المسابقة بنجاح', 'success');
                     fetchCompetitions();
