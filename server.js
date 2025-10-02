@@ -1,4 +1,3 @@
-// server.js
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
@@ -6,7 +5,7 @@ require("dotenv").config();
 
 const connectDB = require("./config/db");
 const studentRoutes = require("./routes/studentRoutes");
-const competitionRoutes = require("./routes/competitionRoutes"); // ✅ جديد
+const competitionRoutes = require("./routes/competitionRoutes");
 
 // الاتصال بقاعدة البيانات
 connectDB();
@@ -20,7 +19,7 @@ app.use(express.json());
 
 // API Routes
 app.use("/api/students", studentRoutes);
-app.use("/api/competitions", competitionRoutes); // ✅ جديد
+app.use("/api/competitions", competitionRoutes);
 
 // ✅ خدمة ملفات الواجهة من مجلد frontend
 app.use(express.static(path.join(__dirname, "frontend")));
