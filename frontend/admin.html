@@ -592,7 +592,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="newStudentImage">.</label>
+                    <label for="newStudentImage">رابط الصورة (اختياري)</label>
                     <input type="text" id="newStudentImage">
                 </div>
                 
@@ -798,7 +798,7 @@
             </div>
             
             <div class="form-group">
-                <label for="editStudentImage">.</label>
+                <label for="editStudentImage">رابط الصورة (اختياري)</label>
                 <input type="text" id="editStudentImage">
             </div>
             
@@ -1244,6 +1244,23 @@
             return date.toLocaleDateString('ar-EG');
         }
 
+        // التحقق من صحة البيانات قبل الإرسال
+        function validateMonthlyPagesData(studentId, month, year, pages) {
+            if (!studentId) {
+                return 'الرجاء اختيار طالب';
+            }
+            
+            if (!month || !year) {
+                return 'الرجاء اختيار الشهر والسنة';
+            }
+            
+            if (pages === '' || isNaN(pages) || parseInt(pages) < 0) {
+                return 'الرجاء إدخال عدد صحيح موجب للصفحات';
+            }
+            
+            return null;
+        }
+
         // فتح نافذة تعديل الطالب
         function openEditStudentModal(id) {
             // البحث عن الطالب في البيانات المخزنة محلياً
@@ -1558,35 +1575,41 @@
             }
         }
 
-        // إضافة صفحات شهرية
+        // إضافة صفحات شهرية - الإصدار المصحح
         async function addMonthlyPages() {
             const studentId = document.getElementById('pagesStudent').value;
             const month = parseInt(document.getElementById('pagesMonth').value);
             const year = parseInt(document.getElementById('pagesYear').value);
             const pages = parseInt(document.getElementById('pagesCount').value);
             const goal = parseInt(document.getElementById('pagesGoal').value);
-            
-            if (!studentId || !month || !year || !pages) {
-                showMessage('pagesMessage', 'الرجاء تعبئة جميع الحقول المطلوبة', 'error');
+
+            // التحقق من البيانات
+            const validationError = validateMonthlyPagesData(studentId, month, year, pages);
+            if (validationError) {
+                showMessage('pagesMessage', validationError, 'error');
                 return;
             }
-            
+
             try {
                 const response = await fetch(`${API_URL}/${studentId}/monthly-pages`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ month, year, pages, goal })
+                    body: JSON.stringify({ 
+                        month, 
+                        year, 
+                        pages, 
+                        goal: goal || 20 
+                    })
                 });
                 
+                const data = await response.json();
+                
                 if (response.ok) {
-                    // مسح الحقول
                     document.getElementById('pagesCount').value = '';
-                    
-                    showMessage('pagesMessage', 'تم حفظ بيانات الصفحات بنجاح', 'success');
+                    showMessage('pagesMessage', data.message || 'تم حفظ بيانات الصفحات بنجاح', 'success');
                     fetchStudents();
                 } else {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'فشل في حفظ بيانات الصفحات');
+                    throw new Error(data.message || 'فشل في حفظ بيانات الصفحات');
                 }
             } catch (error) {
                 console.error('Error adding monthly pages:', error);
@@ -1603,9 +1626,12 @@
             element.className = 'message ' + type;
             element.style.display = 'block';
             
+            // زيادة الوقت لعرض الأخطاء
+            const displayTime = type === 'error' ? 8000 : 5000;
+            
             setTimeout(() => {
                 element.style.display = 'none';
-            }, 5000);
+            }, displayTime);
         }
     </script>
 </body>
