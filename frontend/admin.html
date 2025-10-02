@@ -206,6 +206,11 @@
             color: white;
         }
 
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
         .student-list, .competition-list {
             display: grid;
             grid-template-columns: 1fr;
@@ -261,6 +266,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-right: 3px solid var(--primary-color);
         }
 
         .test-info {
@@ -809,6 +815,91 @@
         </div>
     </div>
 
+    <!-- نافذة تعديل الاختبار -->
+    <div class="modal" id="editTestModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>تعديل بيانات الاختبار</h3>
+                <button class="close-btn" id="closeEditTestModal">&times;</button>
+            </div>
+            
+            <input type="hidden" id="editTestStudentId">
+            <input type="hidden" id="editTestType">
+            <input type="hidden" id="editTestIndex">
+            
+            <div class="form-group">
+                <label for="editTestName">اسم الاختبار</label>
+                <input type="text" id="editTestName" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="editTestResult">النتيجة (من 100)</label>
+                <input type="number" id="editTestResult" min="0" max="100" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="editTestDate">تاريخ الاختبار</label>
+                <input type="date" id="editTestDate" required>
+            </div>
+            
+            <div class="actions">
+                <button id="cancelEditTestBtn" class="btn-danger">إلغاء</button>
+                <button id="saveEditTestBtn" class="btn-primary">حفظ التعديلات</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تعديل الصفحات الشهرية -->
+    <div class="modal" id="editPagesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>تعديل بيانات الصفحات الشهرية</h3>
+                <button class="close-btn" id="closeEditPagesModal">&times;</button>
+            </div>
+            
+            <input type="hidden" id="editPagesStudentId">
+            <input type="hidden" id="editPagesIndex">
+            
+            <div class="form-group">
+                <label for="editPagesMonth">الشهر</label>
+                <select id="editPagesMonth" required>
+                    <option value="1">يناير</option>
+                    <option value="2">فبراير</option>
+                    <option value="3">مارس</option>
+                    <option value="4">أبريل</option>
+                    <option value="5">مايو</option>
+                    <option value="6">يونيو</option>
+                    <option value="7">يوليو</option>
+                    <option value="8">أغسطس</option>
+                    <option value="9">سبتمبر</option>
+                    <option value="10">أكتوبر</option>
+                    <option value="11">نوفمبر</option>
+                    <option value="12">ديسمبر</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="editPagesYear">السنة</label>
+                <input type="number" id="editPagesYear" min="2020" max="2030" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="editPagesCount">عدد الصفحات المحفوظة</label>
+                <input type="number" id="editPagesCount" min="0" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="editPagesGoal">الهدف الشهري (عدد الصفحات)</label>
+                <input type="number" id="editPagesGoal" min="1" required>
+            </div>
+            
+            <div class="actions">
+                <button id="cancelEditPagesBtn" class="btn-danger">إلغاء</button>
+                <button id="saveEditPagesBtn" class="btn-primary">حفظ التعديلات</button>
+            </div>
+        </div>
+    </div>
+
     <!-- نافذة إضافة فائز -->
     <div class="modal" id="addWinnerModal">
         <div class="modal-content">
@@ -907,6 +998,16 @@
             document.getElementById('cancelEditStudentBtn').addEventListener('click', closeEditStudentModal);
             document.getElementById('saveEditStudentBtn').addEventListener('click', saveStudentEdit);
             
+            // أحداث نافذة تعديل الاختبار
+            document.getElementById('closeEditTestModal').addEventListener('click', closeEditTestModal);
+            document.getElementById('cancelEditTestBtn').addEventListener('click', closeEditTestModal);
+            document.getElementById('saveEditTestBtn').addEventListener('click', saveTestEdit);
+            
+            // أحداث نافذة تعديل الصفحات
+            document.getElementById('closeEditPagesModal').addEventListener('click', closeEditPagesModal);
+            document.getElementById('cancelEditPagesBtn').addEventListener('click', closeEditPagesModal);
+            document.getElementById('saveEditPagesBtn').addEventListener('click', savePagesEdit);
+            
             // أحداث نافذة إضافة فائز
             document.getElementById('closeAddWinnerModal').addEventListener('click', closeAddWinnerModal);
             document.getElementById('cancelAddWinnerBtn').addEventListener('click', closeAddWinnerModal);
@@ -916,6 +1017,18 @@
             document.getElementById('editStudentModal').addEventListener('click', function(e) {
                 if (e.target === this) {
                     closeEditStudentModal();
+                }
+            });
+            
+            document.getElementById('editTestModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeEditTestModal();
+                }
+            });
+            
+            document.getElementById('editPagesModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeEditPagesModal();
                 }
             });
             
@@ -981,22 +1094,22 @@
                     
                     <div class="tests-section">
                         <h4>اختبارات الدروس</h4>
-                        ${renderTests(student.lessonTests)}
+                        ${renderTests(student.lessonTests, 'lessonTests', student._id)}
                     </div>
                     
                     <div class="tests-section">
                         <h4>اختبارات التجويد</h4>
-                        ${renderTests(student.tajweedTests)}
+                        ${renderTests(student.tajweedTests, 'tajweedTests', student._id)}
                     </div>
                     
                     <div class="tests-section">
                         <h4>اختبارات القرآن</h4>
-                        ${renderTests(student.memorizationTests)}
+                        ${renderTests(student.memorizationTests, 'memorizationTests', student._id)}
                     </div>
                     
                     <div class="tests-section">
                         <h4>الصفحات المحفوظة</h4>
-                        ${renderMonthlyPages(student.monthlyPages || [])}
+                        ${renderMonthlyPages(student.monthlyPages || [], student._id)}
                     </div>
                     
                     <div class="actions">
@@ -1156,13 +1269,13 @@
             `).join('');
         }
 
-        // عرض الاختبارات
-        function renderTests(tests) {
+        // عرض الاختبارات مع أزرار التعديل والحذف
+        function renderTests(tests, testType, studentId) {
             if (!tests || tests.length === 0) {
                 return '<p>لا توجد اختبارات مسجلة</p>';
             }
             
-            return tests.map(test => `
+            return tests.map((test, index) => `
                 <div class="test-item">
                     <div class="test-info">
                         <div class="test-name">${test.testName || test.lessonName}</div>
@@ -1171,12 +1284,26 @@
                             <span class="test-date">${formatDate(test.date)}</span>
                         </div>
                     </div>
+                    <div class="test-actions">
+                        <button class="btn-warning btn-sm edit-test-btn" 
+                                data-student-id="${studentId}"
+                                data-test-type="${testType}"
+                                data-test-index="${index}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-danger btn-sm delete-test-btn"
+                                data-student-id="${studentId}"
+                                data-test-type="${testType}"
+                                data-test-index="${index}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </div>
             `).join('');
         }
 
-        // عرض الصفحات المحفوظة شهرياً
-        function renderMonthlyPages(monthlyPages) {
+        // عرض الصفحات المحفوظة شهرياً مع أزرار التعديل والحذف
+        function renderMonthlyPages(monthlyPages, studentId) {
             if (!monthlyPages || monthlyPages.length === 0) {
                 return '<p>لا توجد بيانات عن الصفحات المحفوظة</p>';
             }
@@ -1184,7 +1311,7 @@
             // ترتيب البيانات من الأحدث إلى الأقدم
             monthlyPages.sort((a, b) => new Date(b.year, b.month - 1) - new Date(a.year, a.month - 1));
             
-            return monthlyPages.slice(0, 3).map(monthData => {
+            return monthlyPages.slice(0, 5).map((monthData, index) => {
                 const monthNames = [
                     'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
                     'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
@@ -1206,6 +1333,16 @@
                         </div>
                         <div class="test-actions">
                             <span>${progressPercent.toFixed(0)}%</span>
+                            <button class="btn-warning btn-sm edit-pages-btn"
+                                    data-student-id="${studentId}"
+                                    data-pages-index="${index}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-danger btn-sm delete-pages-btn"
+                                    data-student-id="${studentId}"
+                                    data-pages-index="${index}">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </div>
                 `;
@@ -1263,7 +1400,6 @@
 
         // فتح نافذة تعديل الطالب
         function openEditStudentModal(id) {
-            // البحث عن الطالب في البيانات المخزنة محلياً
             const student = studentsData.find(s => s._id === id);
             
             if (student) {
@@ -1277,6 +1413,49 @@
                 document.getElementById('editStudentModal').style.display = 'flex';
             } else {
                 showMessage('studentMessage', 'لم يتم العثور على بيانات الطالب', 'error');
+            }
+        }
+
+        // فتح نافذة تعديل الاختبار
+        function openEditTestModal(studentId, testType, testIndex) {
+            const student = studentsData.find(s => s._id === studentId);
+            
+            if (student) {
+                let testArray;
+                if (testType === 'lessonTests') testArray = student.lessonTests;
+                else if (testType === 'tajweedTests') testArray = student.tajweedTests;
+                else if (testType === 'memorizationTests') testArray = student.memorizationTests;
+                
+                if (testArray && testArray[testIndex]) {
+                    const test = testArray[testIndex];
+                    
+                    document.getElementById('editTestStudentId').value = studentId;
+                    document.getElementById('editTestType').value = testType;
+                    document.getElementById('editTestIndex').value = testIndex;
+                    document.getElementById('editTestName').value = test.testName || '';
+                    document.getElementById('editTestResult').value = test.result || '';
+                    document.getElementById('editTestDate').value = test.date || '';
+                    
+                    document.getElementById('editTestModal').style.display = 'flex';
+                }
+            }
+        }
+
+        // فتح نافذة تعديل الصفحات الشهرية
+        function openEditPagesModal(studentId, pagesIndex) {
+            const student = studentsData.find(s => s._id === studentId);
+            
+            if (student && student.monthlyPages[pagesIndex]) {
+                const pageData = student.monthlyPages[pagesIndex];
+                
+                document.getElementById('editPagesStudentId').value = studentId;
+                document.getElementById('editPagesIndex').value = pagesIndex;
+                document.getElementById('editPagesMonth').value = pageData.month || '';
+                document.getElementById('editPagesYear').value = pageData.year || '';
+                document.getElementById('editPagesCount').value = pageData.pages || '';
+                document.getElementById('editPagesGoal').value = pageData.goal || 20;
+                
+                document.getElementById('editPagesModal').style.display = 'flex';
             }
         }
 
@@ -1296,6 +1475,16 @@
         function closeEditStudentModal() {
             document.getElementById('editStudentModal').style.display = 'none';
             currentEditStudentId = null;
+        }
+
+        // إغلاق نافذة تعديل الاختبار
+        function closeEditTestModal() {
+            document.getElementById('editTestModal').style.display = 'none';
+        }
+
+        // إغلاق نافذة تعديل الصفحات
+        function closeEditPagesModal() {
+            document.getElementById('editPagesModal').style.display = 'none';
         }
 
         // إغلاق نافذة إضافة فائز
@@ -1337,7 +1526,7 @@
                 
                 if (response.ok) {
                     closeEditStudentModal();
-                    fetchStudents(); // إعادة جلب البيانات من الخادم
+                    fetchStudents();
                     showMessage('studentMessage', 'تم تحديث بيانات الطالب بنجاح', 'success');
                 } else {
                     const errorData = await response.json();
@@ -1347,6 +1536,252 @@
                 console.error('Error updating student:', error);
                 showMessage('studentMessage', `حدث خطأ أثناء تحديث بيانات الطالب: ${error.message}`, 'error');
             }
+        }
+
+        // حفظ تعديلات الاختبار
+        async function saveTestEdit() {
+            const studentId = document.getElementById('editTestStudentId').value;
+            const testType = document.getElementById('editTestType').value;
+            const testIndex = document.getElementById('editTestIndex').value;
+            const testName = document.getElementById('editTestName').value.trim();
+            const testResult = document.getElementById('editTestResult').value;
+            const testDate = document.getElementById('editTestDate').value;
+            
+            if (!testName || !testResult || !testDate) {
+                showMessage('studentMessage', 'الرجاء تعبئة جميع حقول الاختبار', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/${studentId}/tests/${testIndex}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        testType,
+                        testName,
+                        result: testResult,
+                        date: testDate
+                    })
+                });
+                
+                if (response.ok) {
+                    closeEditTestModal();
+                    fetchStudents();
+                    showMessage('studentMessage', 'تم تعديل الاختبار بنجاح', 'success');
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'فشل في تعديل الاختبار');
+                }
+            } catch (error) {
+                console.error('Error updating test:', error);
+                showMessage('studentMessage', `حدث خطأ أثناء تعديل الاختبار: ${error.message}`, 'error');
+            }
+        }
+
+        // حفظ تعديلات الصفحات الشهرية
+        async function savePagesEdit() {
+            const studentId = document.getElementById('editPagesStudentId').value;
+            const pagesIndex = document.getElementById('editPagesIndex').value;
+            const month = parseInt(document.getElementById('editPagesMonth').value);
+            const year = parseInt(document.getElementById('editPagesYear').value);
+            const pages = parseInt(document.getElementById('editPagesCount').value);
+            const goal = parseInt(document.getElementById('editPagesGoal').value);
+
+            const validationError = validateMonthlyPagesData(studentId, month, year, pages);
+            if (validationError) {
+                showMessage('studentMessage', validationError, 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/${studentId}/monthly-pages/${pagesIndex}`, {
+                    method: 'PUT',
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        month, 
+                        year, 
+                        pages, 
+                        goal: goal || 20 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    closeEditPagesModal();
+                    fetchStudents();
+                    showMessage('studentMessage', data.message || 'تم تعديل بيانات الصفحات بنجاح', 'success');
+                } else {
+                    throw new Error(data.message || 'فشل في تعديل بيانات الصفحات');
+                }
+            } catch (error) {
+                console.error('Error updating monthly pages:', error);
+                showMessage('studentMessage', `حدث خطأ أثناء تعديل الصفحات الشهرية: ${error.message}`, 'error');
+            }
+        }
+
+        // حذف اختبار
+        async function deleteTest(studentId, testType, testIndex) {
+            if (!confirm('هل أنت متأكد من حذف هذا الاختبار؟')) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/${studentId}/tests/${testIndex}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ testType })
+                });
+                
+                if (response.ok) {
+                    fetchStudents();
+                    showMessage('studentMessage', 'تم حذف الاختبار بنجاح', 'success');
+                } else {
+                    throw new Error('فشل في حذف الاختبار');
+                }
+            } catch (error) {
+                console.error('Error deleting test:', error);
+                showMessage('studentMessage', 'حدث خطأ أثناء حذف الاختبار', 'error');
+            }
+        }
+
+        // حذف صفحات شهرية
+        async function deletePages(studentId, pagesIndex) {
+            if (!confirm('هل أنت متأكد من حذف بيانات الصفحات لهذا الشهر؟')) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/${studentId}/monthly-pages/${pagesIndex}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    fetchStudents();
+                    showMessage('studentMessage', 'تم حذف بيانات الصفحات بنجاح', 'success');
+                } else {
+                    throw new Error('فشل في حذف بيانات الصفحات');
+                }
+            } catch (error) {
+                console.error('Error deleting monthly pages:', error);
+                showMessage('studentMessage', 'حدث خطأ أثناء حذف بيانات الصفحات', 'error');
+            }
+        }
+
+        // إضافة مستمعي الأحداث للاختبارات والصفحات بعد التصيير
+        function attachTestAndPagesEvents() {
+            // أحداث تعديل الاختبارات
+            document.querySelectorAll('.edit-test-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const studentId = e.target.closest('.edit-test-btn').getAttribute('data-student-id');
+                    const testType = e.target.closest('.edit-test-btn').getAttribute('data-test-type');
+                    const testIndex = e.target.closest('.edit-test-btn').getAttribute('data-test-index');
+                    openEditTestModal(studentId, testType, testIndex);
+                });
+            });
+
+            // أحداث حذف الاختبارات
+            document.querySelectorAll('.delete-test-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const studentId = e.target.closest('.delete-test-btn').getAttribute('data-student-id');
+                    const testType = e.target.closest('.delete-test-btn').getAttribute('data-test-type');
+                    const testIndex = e.target.closest('.delete-test-btn').getAttribute('data-test-index');
+                    deleteTest(studentId, testType, testIndex);
+                });
+            });
+
+            // أحداث تعديل الصفحات
+            document.querySelectorAll('.edit-pages-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const studentId = e.target.closest('.edit-pages-btn').getAttribute('data-student-id');
+                    const pagesIndex = e.target.closest('.edit-pages-btn').getAttribute('data-pages-index');
+                    openEditPagesModal(studentId, pagesIndex);
+                });
+            });
+
+            // أحداث حذف الصفحات
+            document.querySelectorAll('.delete-pages-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const studentId = e.target.closest('.delete-pages-btn').getAttribute('data-student-id');
+                    const pagesIndex = e.target.closest('.delete-pages-btn').getAttribute('data-pages-index');
+                    deletePages(studentId, pagesIndex);
+                });
+            });
+        }
+
+        // تعديل دالة renderStudents لإضافة الأحداث
+        function renderStudents(students) {
+            const studentsList = document.getElementById('studentsList');
+            studentsList.innerHTML = '';
+            
+            if (students.length === 0) {
+                studentsList.innerHTML = `
+                    <div class="no-data">
+                        <i class="far fa-folder-open"></i>
+                        <p>لا يوجد طلاب مسجلين</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            students.forEach(student => {
+                const studentCard = document.createElement('div');
+                studentCard.className = 'student-card';
+                
+                studentCard.innerHTML = `
+                    <div class="student-header">
+                        <div class="student-name">${student.name}</div>
+                        <div class="student-code">${student.code}</div>
+                    </div>
+                    
+                    <div class="student-level">المستوى: ${student.overallLevel || 'غير محدد'}</div>
+                    
+                    <div class="tests-section">
+                        <h4>اختبارات الدروس</h4>
+                        ${renderTests(student.lessonTests, 'lessonTests', student._id)}
+                    </div>
+                    
+                    <div class="tests-section">
+                        <h4>اختبارات التجويد</h4>
+                        ${renderTests(student.tajweedTests, 'tajweedTests', student._id)}
+                    </div>
+                    
+                    <div class="tests-section">
+                        <h4>اختبارات القرآن</h4>
+                        ${renderTests(student.memorizationTests, 'memorizationTests', student._id)}
+                    </div>
+                    
+                    <div class="tests-section">
+                        <h4>الصفحات المحفوظة</h4>
+                        ${renderMonthlyPages(student.monthlyPages || [], student._id)}
+                    </div>
+                    
+                    <div class="actions">
+                        <button class="btn-edit edit-btn" data-id="${student._id}">تعديل الطالب</button>
+                        <button class="btn-danger delete-btn" data-id="${student._id}">حذف الطالب</button>
+                    </div>
+                `;
+                
+                studentsList.appendChild(studentCard);
+            });
+            
+            // إضافة مستمعي الأحداث
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    deleteStudent(id);
+                });
+            });
+            
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    openEditStudentModal(id);
+                });
+            });
+
+            // إضافة أحداث الاختبارات والصفحات
+            attachTestAndPagesEvents();
         }
 
         // حفظ الفائز
@@ -1386,7 +1821,7 @@
                 
                 if (response.ok) {
                     closeAddWinnerModal();
-                    fetchCompetitions(); // إعادة جلب البيانات من الخادم
+                    fetchCompetitions();
                     showMessage('competitionMessage', 'تم إضافة الفائز بنجاح', 'success');
                 } else {
                     const errorData = await response.json();
@@ -1456,7 +1891,6 @@
                 });
                 
                 if (response.ok) {
-                    // مسح الحقول
                     document.getElementById('newStudentName').value = '';
                     document.getElementById('newStudentCode').value = '';
                     document.getElementById('newStudentImage').value = '';
@@ -1512,7 +1946,6 @@
                 });
                 
                 if (response.ok) {
-                    // مسح الحقول
                     document.getElementById('competitionTitle').value = '';
                     document.getElementById('competitionDescription').value = '';
                     document.getElementById('competitionType').value = '';
@@ -1558,7 +1991,6 @@
                 });
                 
                 if (response.ok) {
-                    // مسح الحقول
                     document.getElementById('testName').value = '';
                     document.getElementById('testResult').value = '';
                     document.getElementById('testDate').value = '';
@@ -1575,7 +2007,7 @@
             }
         }
 
-        // إضافة صفحات شهرية - الإصدار المصحح
+        // إضافة صفحات شهرية
         async function addMonthlyPages() {
             const studentId = document.getElementById('pagesStudent').value;
             const month = parseInt(document.getElementById('pagesMonth').value);
@@ -1583,7 +2015,6 @@
             const pages = parseInt(document.getElementById('pagesCount').value);
             const goal = parseInt(document.getElementById('pagesGoal').value);
 
-            // التحقق من البيانات
             const validationError = validateMonthlyPagesData(studentId, month, year, pages);
             if (validationError) {
                 showMessage('pagesMessage', validationError, 'error');
@@ -1626,7 +2057,6 @@
             element.className = 'message ' + type;
             element.style.display = 'block';
             
-            // زيادة الوقت لعرض الأخطاء
             const displayTime = type === 'error' ? 8000 : 5000;
             
             setTimeout(() => {
