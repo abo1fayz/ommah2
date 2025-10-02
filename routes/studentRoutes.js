@@ -82,35 +82,57 @@ router.post("/:id/tests", async (req, res) => {
   }
 });
 
-/* إضافة أو تعديل الصفحات الشهرية */
+/* إضافة أو تعديل الصفحات الشهرية - الإصدار المصحح */
 router.post("/:id/monthly-pages", async (req, res) => {
   const { month, year, pages, goal } = req.body;
+  
+  console.log("📝 Received monthly pages data:", req.body);
+  console.log("🎯 Student ID:", req.params.id);
+  
+  // التحقق من البيانات المدخلة
+  if (!month || !year || pages === undefined) {
+    return res.status(400).json({ 
+      message: "البيانات ناقصة. يرجى إدخال الشهر والسنة وعدد الصفحات" 
+    });
+  }
+
   try {
     const student = await Student.findById(req.params.id);
     if (!student) return res.status(404).json({ message: "الطالب غير موجود" });
 
+    // البحث عن بيانات الشهر إن كانت موجودة
     const existingIndex = student.monthlyPages.findIndex(
-      m => m.month === month && m.year === year
+      m => m.month === parseInt(month) && m.year === parseInt(year)
     );
 
     if (existingIndex !== -1) {
-      student.monthlyPages[existingIndex].pages = pages;
-      student.monthlyPages[existingIndex].goal = goal;
-      student.monthlyPages[existingIndex].lastUpdate = new Date().toLocaleDateString("ar-EG");
+      // تحديث البيانات الموجودة
+      student.monthlyPages[existingIndex].pages = parseInt(pages);
+      student.monthlyPages[existingIndex].goal = goal ? parseInt(goal) : 20;
+      student.monthlyPages[existingIndex].lastUpdate = new Date();
     } else {
+      // إضافة بيانات جديدة
       student.monthlyPages.push({
-        month,
-        year,
-        pages,
-        goal,
-        lastUpdate: new Date().toLocaleDateString("ar-EG")
+        month: parseInt(month),
+        year: parseInt(year),
+        pages: parseInt(pages),
+        goal: goal ? parseInt(goal) : 20,
+        lastUpdate: new Date()
       });
     }
 
     await student.save();
-    res.json(student);
+    console.log("✅ Monthly pages saved successfully");
+    
+    res.json({ 
+      message: "تم حفظ بيانات الصفحات بنجاح",
+      student 
+    });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    console.error("❌ Error saving monthly pages:", err);
+    res.status(500).json({ 
+      message: "حدث خطأ أثناء حفظ البيانات: " + err.message 
+    });
   }
 });
 
