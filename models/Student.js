@@ -8,24 +8,27 @@ const testSchema = new mongoose.Schema({
 });
 
 const monthlyPagesSchema = new mongoose.Schema({
-  month: Number,
-  year: Number,
-  pages: Number,
-  goal: Number,
+  month: { type: Number, required: true },
+  year: { type: Number, required: true },
+  pages: { type: Number, required: true, min: 0 },
+  goal: { type: Number, default: 20 },
   lastUpdate: { type: Date, default: Date.now }
 });
+
+// إضافة index للبحث السريع
+monthlyPagesSchema.index({ month: 1, year: 1 });
 
 const studentSchema = new mongoose.Schema({
   name: { type: String, required: true },
   code: { type: String, required: true, unique: true },
-  overallLevel: { type: String, default: "غير محدد" },
+  overallLevel: { type: String, default: "مبتدئ" },
   image: { type: String },
   lessonTests: [testSchema],
   tajweedTests: [testSchema],
   memorizationTests: [testSchema],
   monthlyPages: [monthlyPagesSchema]
 }, {
-  timestamps: true // إضافة timestamps تلقائية
+  timestamps: true
 });
 
 // Middleware للتحقق من عدم تكرار الكود عند التحديث
