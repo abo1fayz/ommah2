@@ -489,7 +489,7 @@
       const studentData = localStorage.getItem("currentStudent");
       if (!studentData) {
         alert("⚠️ الرجاء تسجيل الدخول أولاً");
-        window.location.href = "index.html";
+        window.location.href = "/";
         return;
       }
 
@@ -499,12 +499,15 @@
       document.getElementById("studentName").textContent = student.name;
       document.getElementById("studentCodeDisplay").textContent = student.code;
       document.getElementById("studentLevel").textContent = student.overallLevel || "غير محدد";
-      document.getElementById("studentImage").src = student.image || "default-avatar.png";
+      if (student.image) {
+        document.getElementById("studentImage").src = student.image;
+        document.getElementById("studentImage").style.display = "block";
+      }
 
       // تعبئة الجداول مع الترتيب حسب التاريخ
-      fillTable("lessonTestsTable", student.lessonTests, "lessonName");
-      fillTable("tajweedTestsTable", student.tajweedTests, "testName");
-      fillTable("memorizationTestsTable", student.memorizationTests, "testName");
+      fillTable("lessonTestsTable", student.lessonTests, "lessonName", "lesson");
+      fillTable("tajweedTestsTable", student.tajweedTests, "testName", "quran");
+      fillTable("memorizationTestsTable", student.memorizationTests, "testName", "quran");
 
       // الصفحات الشهرية
       const pagesTable = document.getElementById("pagesTable");
@@ -512,12 +515,17 @@
         // ترتيب الصفحات الشهرية حسب السنة والشهر
         const sortedPages = sortByDate(student.monthlyPages, "year", "month");
         sortedPages.forEach((p, index) => {
+          const monthNames = [
+            'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+            'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+          ];
+          const monthName = monthNames[p.month - 1] || p.month;
           const row = `<tr${index === 0 ? ' class="latest-row"' : ''}>
-            <td>${p.month}${index === 0 ? '<span class="latest-badge">الأحدث</span>' : ''}</td>
+            <td>${monthName}${index === 0 ? '<span class="latest-badge">الأحدث</span>' : ''}</td>
             <td>${p.year}</td>
             <td>${p.pages}</td>
             <td>${p.goal}</td>
-            <td>${p.lastUpdate || ""}</td>
+            <td>${formatDate(p.lastUpdate)}</td>
           </tr>`;
           pagesTable.innerHTML += row;
         });
@@ -531,7 +539,7 @@
       updateStatistics(student);
     };
 
-    // دالة لتحديد التقييم بناءً على النتيجة
+    // دالة لتحديد التقييم بناءً على النسبة المئوية
     function getRating(result) {
       if (!result) return { text: "غير محدد", class: "" };
       
@@ -553,15 +561,42 @@
       }
     }
 
-    function fillTable(tableId, tests, nameField) {
+    // دالة جديدة لتقييم اختبارات القرآن حسب المعايير المطلوبة
+    function getQuranRating(result) {
+      if (!result) return { text: "غير محدد", class: "" };
+      
+      // استخراج الرقم من النتيجة (في حالة وجود % أو نص آخر)
+      const resultValue = parseInt(result.toString().replace(/\D/g, ''));
+      
+      if (isNaN(resultValue)) return { text: "غير محدد", class: "" };
+      
+      if (resultValue >= 97 && resultValue <= 100) {
+        return { text: "تفوق", class: "rating-excellent" };
+      } else if (resultValue >= 94 && resultValue <= 96) {
+        return { text: "ممتاز", class: "rating-very-good" };
+      } else if (resultValue >= 91 && resultValue <= 93) {
+        return { text: "جيد جدا", class: "rating-good" };
+      } else if (resultValue >= 85 && resultValue <= 90) {
+        return { text: "جيد", class: "rating-average" };
+      } else {
+        return { text: "إعادة", class: "rating-weak" };
+      }
+    }
+
+    function fillTable(tableId, tests, nameField, tableType) {
       const table = document.getElementById(tableId);
       if (tests && tests.length > 0) {
         // ترتيب الاختبارات حسب التاريخ (الأحدث أولاً)
         const sortedTests = sortTestsByDate(tests);
         
         sortedTests.forEach((t, index) => {
-          // الحصول على التقييم المناسب للنتيجة
-          const rating = getRating(t.result);
+          // الحصول على التقييم المناسب حسب نوع الجدول
+          let rating;
+          if (tableType === "quran") {
+            rating = getQuranRating(t.result);
+          } else {
+            rating = getRating(t.result);
+          }
           
           const row = `<tr${index === 0 ? ' class="latest-row"' : ''}>
             <td>${t[nameField]}${index === 0 ? '<span class="latest-badge">الأحدث</span>' : ''}</td>
@@ -620,22 +655,24 @@
         }
         
         // إذا كانت السنة متساوية، قارن الشهر
-        const monthA = getMonthNumber(a[monthField]);
-        const monthB = getMonthNumber(b[monthField]);
+        const monthA = parseInt(a[monthField]) || 0;
+        const monthB = parseInt(b[monthField]) || 0;
         
         return monthB - monthA; // الشهر الأحدث أولاً
       });
     }
 
-    // دالة لتحويل اسم الشهر إلى رقم
-    function getMonthNumber(monthName) {
-      const months = {
-        'يناير': 1, 'فبراير': 2, 'مارس': 3, 'أبريل': 4,
-        'مايو': 5, 'يونيو': 6, 'يوليو': 7, 'أغسطس': 8,
-        'سبتمبر': 9, 'أكتوبر': 10, 'نوفمبر': 11, 'ديسمبر': 12
-      };
+    // دالة لتنسيق التاريخ
+    function formatDate(dateString) {
+      if (!dateString) return 'غير محدد';
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return dateString;
       
-      return months[monthName] || 0;
+      return date.toLocaleDateString('ar-EG', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
     }
 
     function updateStatistics(student) {
@@ -661,8 +698,8 @@
 
     function logout() {
       localStorage.removeItem("currentStudent");
-      window.location.href = "index.html";
+      window.location.href = "/";
     }
   </script>
 </body>
-</html>
+  </html>
